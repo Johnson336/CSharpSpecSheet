@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SQLite;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,10 +16,190 @@ namespace CSharpSpecSheet
 {
     public partial class SpecSheet : Form
     {
+        [DllImport("User32.dll")]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("User32.dll")]
+        static extern int SetForegroundWindow(IntPtr hWnd);
+
+        SQLiteConnection m_dbConnection;
+
         public SpecSheet()
         {
             InitializeComponent();
             setDate();
+
+            initializeDatabase();
+            initializeDropdowns();
+
+        }
+
+        public IEnumerable<Control> GetAll(Control control, Type type)
+        {
+            var controls = control.Controls.Cast<Control>();
+
+            return controls.SelectMany(ctrl => GetAll(ctrl, type))
+                                      .Concat(controls)
+                                      .Where(c => c.GetType() == type);
+        }
+
+        private void initializeDatabase()
+        {   
+            if (!File.Exists("db.sqlite"))
+            {
+                SQLiteConnection.CreateFile("db.sqlite");
+            }
+            
+            m_dbConnection = new SQLiteConnection("Data Source=db.sqlite;Version=3;");
+            m_dbConnection.Open();
+
+            // create table to hold dropdown data
+            //executeSQL("DROP TABLE IF EXISTS dropdown_data");
+            executeSQL("CREATE TABLE IF NOT EXISTS dropdown_data (category VARCHAR(50) NOT NULL, name VARCHAR(50) UNIQUE NOT NULL, frequency INT NOT NULL, id INT PRIMARY KEY)");
+
+            //executeSQL("DROP TABLE IF EXISTS archive");
+            executeSQL("CREATE TABLE IF NOT EXISTS archive ("+
+                        "id INT PRIMARY KEY,"+
+                        "timestamp TIMESTAMP,"+
+                        "ispf TEXT NOT NULL,"+
+                        "date DATETIME,"+
+                        "condition TEXT NOT NULL,"+
+                        "brand TEXT NOT NULL,"+
+                        "brandother TEXT NOT NULL,"+
+                        "serial TEXT UNIQUE NOT NULL,"+
+                        "model TEXT NOT NULL,"+
+                        "formfactor TEXT NOT NULL,"+
+                        "cpuqty TEXT NOT NULL,"+
+                        "cpucores TEXT NOT NULL,"+
+                        "checkht TEXT NOT NULL,"+
+                        "cpuspeed TEXT NOT NULL,"+
+                        "cputype TEXT NOT NULL,"+
+                        "busspeed TEXT NOT NULL,"+
+                        "cpuname TEXT NOT NULL,"+
+                        "memorysize TEXT NOT NULL,"+
+                        "memoryrating TEXT NOT NULL,"+
+                        "memorytype TEXT NOT NULL,"+
+                        "memoryspeed TEXT NOT NULL,"+
+                        "weight TEXT NOT NULL,"+
+                        "hddqty TEXT NOT NULL,"+
+                        "hddsize TEXT,"+
+                        "hddtype TEXT,"+
+                        "hddrpm TEXT,"+
+                        "hddserial TEXT,"+
+                        "video TEXT NOT NULL,"+
+                        "videomodel TEXT NOT NULL,"+
+                        "vram TEXT NOT NULL,"+
+                        "optical TEXT NOT NULL,"+
+                        "drivesnone TEXT NOT NULL,"+
+                        "drivesfdd TEXT NOT NULL,"+
+                        "drivestape TEXT NOT NULL,"+
+                        "lcdsize TEXT NOT NULL,"+
+                        "networknone TEXT NOT NULL,"+
+                        "ethernet TEXT NOT NULL,"+
+                        "modem TEXT NOT NULL,"+
+                        "wifi TEXT NOT NULL,"+
+                        "bt TEXT NOT NULL,"+
+                        "coa TEXT NOT NULL,"+
+                        "osno TEXT NOT NULL,"+
+                        "osyes TEXT NOT NULL,"+
+                        "notes TEXT NOT NULL,"+
+                        "accnone TEXT NOT NULL,"+
+                        "accac TEXT NOT NULL,"+
+                        "accpower TEXT NOT NULL,"+
+                        "accbatt TEXT NOT NULL,"+
+                        "accextbatt TEXT NOT NULL,"+
+                        "accfinger TEXT NOT NULL,"+
+                        "accwebcam TEXT NOT NULL,"+
+                        "acckeyboard TEXT NOT NULL,"+
+                        "accmouse TEXT NOT NULL,"+
+                        "damage TEXT NOT NULL,"+
+                        "usb TEXT NOT NULL,"+
+                        "numethernet TEXT NOT NULL,"+
+                        "nummodem TEXT NOT NULL,"+
+                        "vga TEXT NOT NULL,"+
+                        "dvi TEXT NOT NULL,"+
+                        "svideo TEXT NOT NULL,"+
+                        "ps2 TEXT NOT NULL,"+
+                        "audio TEXT NOT NULL,"+
+                        "esatap TEXT NOT NULL,"+
+                        "numserial TEXT NOT NULL,"+
+                        "parallel TEXT NOT NULL,"+
+                        "pcmcia TEXT NOT NULL,"+
+                        "sdcard TEXT NOT NULL,"+
+                        "firewire TEXT NOT NULL,"+
+                        "esata TEXT NOT NULL,"+
+                        "hdmi TEXT NOT NULL,"+
+                        "scsi TEXT NOT NULL,"+
+                        "displayport TEXT NOT NULL,"+
+                        "version TEXT NOT NULL,"+
+                        "tester TEXT NOT NULL)"
+                        );
+                
+        }
+
+        private void initializeDropdowns()
+        {
+            var c = GetAll(this, typeof(ComboBox));
+            //initDropdown("formfactor", dropFormfactor);
+            //initDropdown("optical", dropOptical);
+            foreach (var item in c)
+            {
+                initDropdown(((ComboBox)item));
+            }
+        }
+
+        private void initDropdown(ComboBox drop)
+        {
+            string sql = "SELECT * FROM dropdown_data WHERE category='" + drop.Name + "' ORDER BY frequency DESC";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            drop.Items.Clear();
+            while (reader.Read())
+            {
+                drop.Items.Add(reader["name"]);
+            }
+
+        }
+
+        private void executeSQL(string stmt)
+        {
+            SQLiteCommand cmd = new SQLiteCommand(stmt, m_dbConnection);
+
+            lblStatusBar2.Text = lblStatusBar.Text;
+            lblStatusBar.Text = stmt + ": " + cmd.ExecuteNonQuery() + " rows affected.";
+
+        }
+
+        private void saveDropdown(ComboBox drop)
+        {
+            if ((drop.Name == "") || (drop.Text == "")) {
+                return;
+            }
+            /*string sql = "SELECT * FROM dropdown_data WHERE category='" + category + "' AND name='" + name + "'";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            int frequency = 0;
+            while (reader.Read())
+            {
+                frequency = (int)reader["frequency"];
+            }
+            */
+
+
+            //sql = "insert into dropdown_data (category, name, frequency) values ('" + category + "', '" + name + "', " + frequency++ + ")";
+
+            /*sql = "UPDATE dropdown_data SET(category='" + category + "', name='" + name + "', frequency=" + ++frequency + ") WHERE category='" + category + "' AND name='" + name + "'"
+                    + " IF @@ROWCOUNT = 0"
+                    + " INSERT INTO dropdown_data VALUES ('" + category + "', '" + name + "', " + ++frequency + ")";
+
+            command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+            */
+            executeSQL("UPDATE OR IGNORE dropdown_data SET category='" + drop.Name + "', name='" + drop.Text + "', frequency = frequency + 1 WHERE category='" + drop.Name + "' AND name='" + drop.Text + "'");
+
+            executeSQL("INSERT OR IGNORE INTO dropdown_data (category, name, frequency) VALUES ('" + drop.Name + "', '" + drop.Text + "', 1)");
+
+
+            initDropdown(drop);
         }
 
         private void setDate()
@@ -201,14 +384,48 @@ namespace CSharpSpecSheet
 
         private void printButton_Click(object sender, EventArgs e)
         {
+            //performPrint();
             archiveSerial();
+
+        }
+
+
+        private void performPrint()
+        {
+            //string filename = AppDomain.CurrentDomain.BaseDirectory + "SpecSheet.lbx";
+            string filename = AppDomain.CurrentDomain.BaseDirectory + "SpecSheet.txt";
+            System.Diagnostics.Process.Start(filename);
+
+            //IntPtr ptrFF = FindWindow(null, "P-Touch");
+            int processExists = 0;
+            while (processExists == 0)
+            { // this should delay sending keystrokes until the process actually starts
+                processExists = Process.GetProcessesByName("Notepad").Length;
+            }
+
+            Process p = Process.GetProcessesByName("Notepad").FirstOrDefault();
+            if (p != null)
+            {
+                IntPtr h = p.MainWindowHandle;
+                SetForegroundWindow(h);
+                SendKeys.SendWait("^p");
+                SendKeys.SendWait("~");
+                
+            }
 
         }
 
         private void archiveSerial()
         {
+            if (txtSerial.Text == "")
+            {
+                return;
+            }
+            /*
+            *******old load method from csv files*******
+
             string directory = AppDomain.CurrentDomain.BaseDirectory + "archive";
-            System.IO.Directory.CreateDirectory(directory); /* create archive directory if it doesn't already exist */
+            System.IO.Directory.CreateDirectory(directory); // create archive directory if it doesn't already exist 
             string filename = directory + "\\" + txtSerial.Text + ".csv";
 
             string output = txtISPF.Text + ", " + labelDate.Text + ", " + dropCondition.Text + ", " + dropBrand.Text + ", " + txtBrandOther.Text + ", " + txtSerial.Text + ", " + 
@@ -226,15 +443,170 @@ namespace CSharpSpecSheet
                 labelVersion.Text + ", " + txtTester.Text;
 
             File.WriteAllText(filename, output);
+            */
 
+            // new load method using sqlite database
+            executeSQL("UPDATE OR IGNORE archive SET "+
+                "ispf='" + txtISPF.Text + "', "+
+                "date='" + labelDate.Text + "', " +
+                "condition='" + dropCondition.Text + "', " +
+                "brand='" + dropBrand.Text + "', " +
+                "brandother='" + txtBrandOther.Text + "', " +
+                "serial='" + txtSerial.Text + "', " +
+                "model='" + txtModel.Text + "', " +
+                "formfactor='" + dropFormfactor.Text + "', " +
+                "cpuqty='" + spinCPUQty.Value + "', " +
+                "cpucores='" + spinCPUCores.Value + "', " +
+                "checkht='" + checkHT.Checked + "', " +
+                "cpuspeed='" + txtCPUSpeed.Text + "', " +
+                "cputype='" + dropCPUType.Text + "', " +
+                "busspeed='" + txtBusSpeed.Text + "', " +
+                "cpuname='" + txtCPUName.Text + "', " +
+                "memorysize='" + dropMemorySize.Text + "', " +
+                "memoryrating='" + dropMemoryRating.Text + "', " +
+                "memorytype='" + dropMemoryType.Text + "', " +
+                "memoryspeed='" + dropMemorySpeed.Text + "', " +
+                "weight='" + txtWeight.Text + "', " +
+                "hddqty='" + spinHDDQty.Value + "', " +
+                "hddsize='" + txtHDDSize.Text + "', " +
+                "hddtype='" + dropHDDType.Text + "', " +
+                "hddrpm='" + dropHDDRPM.Text + "', " +
+                "hddserial='" + txtHDDSerial.Text + "', " +
+                "video='" + dropVideo.Text + "', " +
+                "videomodel='" + txtVideoModel.Text + "', " +
+                "vram='" + txtVRAM.Text + "', " +
+                "optical='" + dropOptical.Text + "', " +
+                "drivesnone='" + checkDrivesNone.Checked + "', " +
+                "drivesfdd='" + checkDrivesFDD.Checked + "', " +
+                "drivestape='" + checkDrivesTape.Checked + "', " +
+                "lcdsize='" + txtLCDSize.Text + "', " +
+                "networknone='" + checkNetworkNone.Checked + "', " +
+                "ethernet='" + checkEthernet.Checked + "', " +
+                "modem='" + checkModem.Checked + "', " +
+                "wifi='" + checkWiFi.Checked + "', " +
+                "bt='" + checkBT.Checked + "', " +
+                "coa='" + dropCOA.Text + "', " +
+                "osno='" + radioOSNo.Checked + "', " +
+                "osyes='" + radioOSYes.Checked + "', " +
+                "notes='" + txtNotes.Text.Replace("'", "''") + "', " +
+                "accnone='" + checkAccNone.Checked + "', " +
+                "accac='" + checkAccAC.Checked + "', " +
+                "accpower='" + checkAccPower.Checked + "', " +
+                "accbatt='" + checkAccBatt.Checked + "', " +
+                "accextbatt='" + checkAccExtBatt.Checked + "', " +
+                "accfinger='" + checkAccFinger.Checked + "', " +
+                "accwebcam='" + checkAccWebcam.Checked + "', " +
+                "acckeyboard='" + checkAccKeyboard.Checked + "', " +
+                "accmouse='" + checkAccMouse.Checked + "', " +
+                "damage='" + dropDamage.Text + "', " +
+                "usb='" + txtUSB.Text + "', " +
+                "numethernet='" + txtEthernet.Text + "', " +
+                "nummodem='" + txtModem.Text + "', " +
+                "vga='" + txtVGA.Text + "', " +
+                "dvi='" + txtDVI.Text + "', " +
+                "svideo='" + txtSVideo.Text + "', " +
+                "ps2='" + txtPS2.Text + "', " +
+                "audio='" + txtAudio.Text + "', " +
+                "esatap='" + txteSATAp.Text + "', " +
+                "numserial='" + txtNumSerial.Text + "', " +
+                "parallel='" + txtParallel.Text + "', " +
+                "pcmcia='" + txtPCMCIA.Text + "', " +
+                "sdcard='" + txtSDCard.Text + "', " +
+                "firewire='" + txtFirewire.Text + "', " +
+                "esata='" + txteSATA.Text + "', " +
+                "hdmi='" + txtHDMI.Text + "', " +
+                "scsi='" + txtSCSI.Text + "', " +
+                "displayport='" + txtDisplayPort.Text + "', " +
+                "version='" + labelVersion.Text + "', " +
+                "tester='" + txtTester.Text + "' " +
+                "WHERE serial='" + txtSerial.Text + "'");
+
+            executeSQL("INSERT OR IGNORE INTO archive (ispf, date, condition, brand, brandother, serial, model, formfactor, cpuqty, cpucores, checkht, cpuspeed, cputype, busspeed, cpuname, memorysize, memoryrating, memorytype, memoryspeed, weight, hddqty, hddsize, hddtype, hddrpm, hddserial, video, videomodel, vram, optical, drivesnone, drivesfdd, drivestape, lcdsize, networknone, ethernet, modem, wifi, bt, coa, osno, osyes, notes, accnone, accac, accpower, accbatt, accextbatt, accfinger, accwebcam, acckeyboard, accmouse, damage, usb, numethernet, nummodem, vga, dvi, svideo, ps2, audio, esatap, numserial, parallel, pcmcia, sdcard, firewire, esata, hdmi, scsi, displayport, version, tester) "+
+                "VALUES ('" + txtISPF.Text + "', " +
+                "'" + labelDate.Text + "', " +
+                "'" + dropCondition.Text + "', " +
+                "'" + dropBrand.Text + "', " +
+                "'" + txtBrandOther.Text + "', " +
+                "'" + txtSerial.Text + "', " +
+                "'" + txtModel.Text + "', " +
+                "'" + dropFormfactor.Text + "', " +
+                "'" + spinCPUQty.Value + "', " +
+                "'" + spinCPUCores.Value + "', " +
+                "'" + checkHT.Checked + "', " +
+                "'" + txtCPUSpeed.Text + "', " +
+                "'" + dropCPUType.Text + "', " +
+                "'" + txtBusSpeed.Text + "', " +
+                "'" + txtCPUName.Text + "', " +
+                "'" + dropMemorySize.Text + "', " +
+                "'" + dropMemoryRating.Text + "', " +
+                "'" + dropMemoryType.Text + "', " +
+                "'" + dropMemorySpeed.Text + "', " +
+                "'" + txtWeight.Text + "', " +
+                "'" + spinHDDQty.Value + "', " +
+                "'" + txtHDDSize.Text + "', " +
+                "'" + dropHDDType.Text + "', " +
+                "'" + dropHDDRPM.Text + "', " +
+                "'" + txtHDDSerial.Text + "', " +
+                "'" + dropVideo.Text + "', " +
+                "'" + txtVideoModel.Text + "', " +
+                "'" + txtVRAM.Text + "', " +
+                "'" + dropOptical.Text + "', " +
+                "'" + checkDrivesNone.Checked + "', " +
+                "'" + checkDrivesFDD.Checked + "', " +
+                "'" + checkDrivesTape.Checked + "', " +
+                "'" + txtLCDSize.Text + "', " +
+                "'" + checkNetworkNone.Checked + "', " +
+                "'" + checkEthernet.Checked + "', " +
+                "'" + checkModem.Checked + "', " +
+                "'" + checkWiFi.Checked + "', " +
+                "'" + checkBT.Checked + "', " +
+                "'" + dropCOA.Text + "', " +
+                "'" + radioOSNo.Checked + "', " +
+                "'" + radioOSYes.Checked + "', " +
+                "'" + txtNotes.Text.Replace("'", "''") + "', " +
+                "'" + checkAccNone.Checked + "', " +
+                "'" + checkAccAC.Checked + "', " +
+                "'" + checkAccPower.Checked + "', " +
+                "'" + checkAccBatt.Checked + "', " +
+                "'" + checkAccExtBatt.Checked + "', " +
+                "'" + checkAccFinger.Checked + "', " +
+                "'" + checkAccWebcam.Checked + "', " +
+                "'" + checkAccKeyboard.Checked + "', " +
+                "'" + checkAccMouse.Checked + "', " +
+                "'" + dropDamage.Text + "', " +
+                "'" + txtUSB.Text + "', " +
+                "'" + txtEthernet.Text + "', " +
+                "'" + txtModem.Text + "', " +
+                "'" + txtVGA.Text + "', " +
+                "'" + txtDVI.Text + "', " +
+                "'" + txtSVideo.Text + "', " +
+                "'" + txtPS2.Text + "', " +
+                "'" + txtAudio.Text + "', " +
+                "'" + txteSATAp.Text + "', " +
+                "'" + txtNumSerial.Text + "', " +
+                "'" + txtParallel.Text + "', " +
+                "'" + txtPCMCIA.Text + "', " +
+                "'" + txtSDCard.Text + "', " +
+                "'" + txtFirewire.Text + "', " +
+                "'" + txteSATA.Text + "', " +
+                "'" + txtHDMI.Text + "', " +
+                "'" + txtSCSI.Text + "', " +
+                "'" + txtDisplayPort.Text + "', " +
+                "'" + labelVersion.Text + "', " +
+                "'" + txtTester.Text + "')"
+
+
+                );
 
         }
 
         private void loadSerialFromArchive(string s)
         {
+            /*
+            *******old load method from csv files*******
 
             string directory = AppDomain.CurrentDomain.BaseDirectory + "archive";
-            System.IO.Directory.CreateDirectory(directory); /* create archive directory if it doesn't already exist */
+            System.IO.Directory.CreateDirectory(directory); // create archive directory if it doesn't already exist
             string filename = directory + "\\" + s + ".csv";
 
             if (File.Exists(filename))
@@ -249,7 +621,7 @@ namespace CSharpSpecSheet
 
                 
                 txtISPF.Text = input[0];
-                labelDate.Text = input[1];
+                //labelDate.Text = input[1];
                 dropCondition.Text = input[2];
                 dropBrand.Text = input[3];
                 txtBrandOther.Text = input[4];
@@ -318,13 +690,92 @@ namespace CSharpSpecSheet
                 txtHDMI.Text = input[67];
                 txtSCSI.Text = input[68];
                 txtDisplayPort.Text = input[69];
-                labelVersion.Text = input[70];
+                //labelVersion.Text = input[70];
                 txtTester.Text = input[71];
 
+            }
 
+            */
 
+            // new load method using sqlite database
+            string sql = "SELECT * FROM archive WHERE serial='" + s + "' ORDER BY timestamp DESC";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader input = command.ExecuteReader();
+            while (input.Read())
+            {
 
-
+                txtISPF.Text = (string)input["ispf"];
+                //labelDate.Text = input[1];
+                dropCondition.Text = (string)input["condition"];
+                dropBrand.Text = (string)input["brand"];
+                txtBrandOther.Text = (string)input["brandother"];
+                txtSerial.Text = (string)input["serial"];
+                txtModel.Text = (string)input["model"];
+                dropFormfactor.Text = (string)input["formfactor"];
+                spinCPUQty.Value = int.Parse((string)input["cpuqty"]);
+                spinCPUCores.Value = int.Parse((string)input["cpucores"]);
+                checkHT.Checked = bool.Parse((string)input["checkht"]);
+                txtCPUSpeed.Text = (string)input["cpuspeed"];
+                dropCPUType.Text = (string)input["cputype"];
+                txtBusSpeed.Text = (string)input["busspeed"];
+                txtCPUName.Text = (string)input["cpuname"];
+                dropMemorySize.Text = (string)input["memorysize"];
+                dropMemoryRating.Text = (string)input["memoryrating"];
+                dropMemoryType.Text = (string)input["memorytype"];
+                dropMemorySpeed.Text = (string)input["memoryspeed"];
+                txtWeight.Text = (string)input["weight"];
+                spinHDDQty.Value = int.Parse((string)input["hddqty"]);
+                txtHDDSize.Text = (string)input["hddsize"];
+                dropHDDType.Text = (string)input["hddtype"];
+                dropHDDRPM.Text = (string)input["hddrpm"];
+                txtHDDSerial.Text = (string)input["hddserial"];
+                dropVideo.Text = (string)input["video"];
+                txtVideoModel.Text = (string)input["videomodel"];
+                txtVRAM.Text = (string)input["vram"];
+                dropOptical.Text = (string)input["optical"];
+                checkDrivesNone.Checked = bool.Parse((string)input["drivesnone"]);
+                checkDrivesFDD.Checked = bool.Parse((string)input["drivesfdd"]);
+                checkDrivesTape.Checked = bool.Parse((string)input["drivestape"]);
+                txtLCDSize.Text = (string)input["lcdsize"];
+                checkNetworkNone.Checked = bool.Parse((string)input["networknone"]);
+                checkEthernet.Checked = bool.Parse((string)input["ethernet"]);
+                checkModem.Checked = bool.Parse((string)input["modem"]);
+                checkWiFi.Checked = bool.Parse((string)input["wifi"]);
+                checkBT.Checked = bool.Parse((string)input["bt"]);
+                dropCOA.Text = (string)input["coa"];
+                radioOSNo.Checked = bool.Parse((string)input["osno"]);
+                radioOSYes.Checked = bool.Parse((string)input["osyes"]);
+                txtNotes.Text = (string)input["notes"];
+                checkAccNone.Checked = bool.Parse((string)input["accnone"]);
+                checkAccAC.Checked = bool.Parse((string)input["accac"]);
+                checkAccPower.Checked = bool.Parse((string)input["accpower"]);
+                checkAccBatt.Checked = bool.Parse((string)input["accbatt"]);
+                checkAccExtBatt.Checked = bool.Parse((string)input["accextbatt"]);
+                checkAccFinger.Checked = bool.Parse((string)input["accfinger"]);
+                checkAccWebcam.Checked = bool.Parse((string)input["accwebcam"]);
+                checkAccKeyboard.Checked = bool.Parse((string)input["acckeyboard"]);
+                checkAccMouse.Checked = bool.Parse((string)input["accmouse"]);
+                dropDamage.Text = (string)input["damage"];
+                txtUSB.Text = (string)input["usb"];
+                txtEthernet.Text = (string)input["numethernet"];
+                txtModem.Text = (string)input["nummodem"];
+                txtVGA.Text = (string)input["vga"];
+                txtDVI.Text = (string)input["dvi"];
+                txtSVideo.Text = (string)input["svideo"];
+                txtPS2.Text = (string)input["ps2"];
+                txtAudio.Text = (string)input["audio"];
+                txteSATAp.Text = (string)input["esatap"];
+                txtNumSerial.Text = (string)input["numserial"];
+                txtParallel.Text = (string)input["parallel"];
+                txtPCMCIA.Text = (string)input["pcmcia"];
+                txtSDCard.Text = (string)input["sdcard"];
+                txtFirewire.Text = (string)input["firewire"];
+                txteSATA.Text = (string)input["esata"];
+                txtHDMI.Text = (string)input["hdmi"];
+                txtSCSI.Text = (string)input["scsi"];
+                txtDisplayPort.Text = (string)input["displayport"];
+                //labelVersion.Text = input[70];
+                txtTester.Text = (string)input["tester"];
             }
 
 
@@ -337,9 +788,98 @@ namespace CSharpSpecSheet
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-            this.Controls.Clear();
-            this.InitializeComponent();
-            this.setDate();
+            Controls.Clear();
+            InitializeComponent();
+            setDate();
+
+            m_dbConnection.Close();
+            initializeDatabase();
+            initializeDropdowns();
+        }
+
+        private void SpecSheet_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            m_dbConnection.Close();
+        }
+
+        private void dropFormfactor_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropBrand_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropCondition_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropHDDType_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropHDDRPM_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropVideo_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropOptical_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropCPUType_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropCOA_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropMemorySize_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropMemoryRating_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropMemoryType_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropMemorySpeed_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropDamage_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropCPUType_SelectedValueChanged(object sender, EventArgs e)
+        {
+            txtCPUName.Text = "";
+        }
+
+        private void dropCPUType_TextUpdate(object sender, EventArgs e)
+        {
+            txtCPUName.Text = "";
         }
     }
 }

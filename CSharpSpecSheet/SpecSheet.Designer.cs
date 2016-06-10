@@ -170,6 +170,8 @@
             this.checkFG = new System.Windows.Forms.CheckBox();
             this.checkMCF = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.lblStatusBar = new System.Windows.Forms.Label();
+            this.lblStatusBar2 = new System.Windows.Forms.Label();
             this.frameISPF.SuspendLayout();
             this.frameTester.SuspendLayout();
             this.frameBrand.SuspendLayout();
@@ -334,6 +336,7 @@
             this.dropBrand.Name = "dropBrand";
             this.dropBrand.Size = new System.Drawing.Size(79, 21);
             this.dropBrand.TabIndex = 0;
+            this.dropBrand.Leave += new System.EventHandler(this.dropBrand_Leave);
             // 
             // frameModel
             // 
@@ -386,6 +389,7 @@
             this.dropCondition.Name = "dropCondition";
             this.dropCondition.Size = new System.Drawing.Size(113, 21);
             this.dropCondition.TabIndex = 0;
+            this.dropCondition.Leave += new System.EventHandler(this.dropCondition_Leave);
             // 
             // frameFormfactor
             // 
@@ -404,6 +408,7 @@
             this.dropFormfactor.Name = "dropFormfactor";
             this.dropFormfactor.Size = new System.Drawing.Size(134, 21);
             this.dropFormfactor.TabIndex = 0;
+            this.dropFormfactor.Leave += new System.EventHandler(this.dropFormfactor_Leave);
             // 
             // frameCPUType
             // 
@@ -422,6 +427,9 @@
             this.dropCPUType.Name = "dropCPUType";
             this.dropCPUType.Size = new System.Drawing.Size(147, 21);
             this.dropCPUType.TabIndex = 0;
+            this.dropCPUType.TextUpdate += new System.EventHandler(this.dropCPUType_TextUpdate);
+            this.dropCPUType.SelectedValueChanged += new System.EventHandler(this.dropCPUType_SelectedValueChanged);
+            this.dropCPUType.Leave += new System.EventHandler(this.dropCPUType_Leave);
             // 
             // frameMemorySize
             // 
@@ -440,6 +448,7 @@
             this.dropMemorySize.Name = "dropMemorySize";
             this.dropMemorySize.Size = new System.Drawing.Size(121, 21);
             this.dropMemorySize.TabIndex = 0;
+            this.dropMemorySize.Leave += new System.EventHandler(this.dropMemorySize_Leave);
             // 
             // frameMemoryType
             // 
@@ -458,6 +467,7 @@
             this.dropMemoryType.Name = "dropMemoryType";
             this.dropMemoryType.Size = new System.Drawing.Size(126, 21);
             this.dropMemoryType.TabIndex = 0;
+            this.dropMemoryType.Leave += new System.EventHandler(this.dropMemoryType_Leave);
             // 
             // frameMemoryRating
             // 
@@ -476,6 +486,7 @@
             this.dropMemoryRating.Name = "dropMemoryRating";
             this.dropMemoryRating.Size = new System.Drawing.Size(121, 21);
             this.dropMemoryRating.TabIndex = 0;
+            this.dropMemoryRating.Leave += new System.EventHandler(this.dropMemoryRating_Leave);
             // 
             // frameMemorySpeed
             // 
@@ -494,6 +505,7 @@
             this.dropMemorySpeed.Name = "dropMemorySpeed";
             this.dropMemorySpeed.Size = new System.Drawing.Size(126, 21);
             this.dropMemorySpeed.TabIndex = 0;
+            this.dropMemorySpeed.Leave += new System.EventHandler(this.dropMemorySpeed_Leave);
             // 
             // frameCPUCores
             // 
@@ -713,6 +725,7 @@
             this.dropHDDType.Name = "dropHDDType";
             this.dropHDDType.Size = new System.Drawing.Size(76, 21);
             this.dropHDDType.TabIndex = 0;
+            this.dropHDDType.Leave += new System.EventHandler(this.dropHDDType_Leave);
             // 
             // frameHDDRPM
             // 
@@ -732,6 +745,7 @@
             this.dropHDDRPM.Name = "dropHDDRPM";
             this.dropHDDRPM.Size = new System.Drawing.Size(76, 21);
             this.dropHDDRPM.TabIndex = 0;
+            this.dropHDDRPM.Leave += new System.EventHandler(this.dropHDDRPM_Leave);
             // 
             // frameHDDSerial
             // 
@@ -769,6 +783,7 @@
             this.dropVideo.Name = "dropVideo";
             this.dropVideo.Size = new System.Drawing.Size(121, 21);
             this.dropVideo.TabIndex = 0;
+            this.dropVideo.Leave += new System.EventHandler(this.dropVideo_Leave);
             // 
             // frameVideoModel
             // 
@@ -835,6 +850,7 @@
             this.dropOptical.Name = "dropOptical";
             this.dropOptical.Size = new System.Drawing.Size(121, 21);
             this.dropOptical.TabIndex = 0;
+            this.dropOptical.Leave += new System.EventHandler(this.dropOptical_Leave);
             // 
             // frameOther
             // 
@@ -979,6 +995,7 @@
             this.dropCOA.Name = "dropCOA";
             this.dropCOA.Size = new System.Drawing.Size(138, 21);
             this.dropCOA.TabIndex = 0;
+            this.dropCOA.Leave += new System.EventHandler(this.dropCOA_Leave);
             // 
             // frameOS
             // 
@@ -1050,6 +1067,7 @@
             this.dropDamage.Name = "dropDamage";
             this.dropDamage.Size = new System.Drawing.Size(138, 21);
             this.dropDamage.TabIndex = 0;
+            this.dropDamage.Leave += new System.EventHandler(this.dropDamage_Leave);
             // 
             // frameAccessories
             // 
@@ -1599,11 +1617,29 @@
             this.pictureBox1.TabIndex = 46;
             this.pictureBox1.TabStop = false;
             // 
+            // lblStatusBar
+            // 
+            this.lblStatusBar.AutoSize = true;
+            this.lblStatusBar.Location = new System.Drawing.Point(10, 539);
+            this.lblStatusBar.Name = "lblStatusBar";
+            this.lblStatusBar.Size = new System.Drawing.Size(0, 13);
+            this.lblStatusBar.TabIndex = 47;
+            // 
+            // lblStatusBar2
+            // 
+            this.lblStatusBar2.AutoSize = true;
+            this.lblStatusBar2.Location = new System.Drawing.Point(7, 524);
+            this.lblStatusBar2.Name = "lblStatusBar2";
+            this.lblStatusBar2.Size = new System.Drawing.Size(0, 13);
+            this.lblStatusBar2.TabIndex = 48;
+            // 
             // SpecSheet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 561);
+            this.Controls.Add(this.lblStatusBar2);
+            this.Controls.Add(this.lblStatusBar);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.checkMCF);
             this.Controls.Add(this.checkFG);
@@ -1656,6 +1692,7 @@
             this.MinimumSize = new System.Drawing.Size(1000, 600);
             this.Name = "SpecSheet";
             this.Text = "C# Computer Spec Sheet";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SpecSheet_FormClosing);
             this.frameISPF.ResumeLayout(false);
             this.frameISPF.PerformLayout();
             this.frameTester.ResumeLayout(false);
@@ -1867,6 +1904,8 @@
         private System.Windows.Forms.CheckBox checkFG;
         private System.Windows.Forms.CheckBox checkMCF;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label lblStatusBar;
+        private System.Windows.Forms.Label lblStatusBar2;
     }
 }
 
