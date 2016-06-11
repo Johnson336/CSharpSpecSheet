@@ -73,7 +73,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtCPUSpeed = new System.Windows.Forms.TextBox();
             this.frameCPUName = new System.Windows.Forms.GroupBox();
-            this.txtCPUName = new System.Windows.Forms.TextBox();
             this.frameWeight = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtWeight = new System.Windows.Forms.TextBox();
@@ -172,6 +171,10 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblStatusBar = new System.Windows.Forms.Label();
             this.lblStatusBar2 = new System.Windows.Forms.Label();
+            this.frameCaddyQTY = new System.Windows.Forms.GroupBox();
+            this.spinCaddyQTY = new System.Windows.Forms.NumericUpDown();
+            this.checkCaddyNA = new System.Windows.Forms.CheckBox();
+            this.dropCPUName = new System.Windows.Forms.ComboBox();
             this.frameISPF.SuspendLayout();
             this.frameTester.SuspendLayout();
             this.frameBrand.SuspendLayout();
@@ -213,6 +216,8 @@
             this.frameLCDSize.SuspendLayout();
             this.framePorts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.frameCaddyQTY.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spinCaddyQTY)).BeginInit();
             this.SuspendLayout();
             // 
             // frameISPF
@@ -251,6 +256,7 @@
             this.adminButton.TabStop = false;
             this.adminButton.Text = "Admin";
             this.adminButton.UseVisualStyleBackColor = true;
+            this.adminButton.Click += new System.EventHandler(this.adminButton_Click);
             // 
             // loadButton
             // 
@@ -354,6 +360,7 @@
             this.txtModel.Name = "txtModel";
             this.txtModel.Size = new System.Drawing.Size(118, 20);
             this.txtModel.TabIndex = 0;
+            this.txtModel.TextChanged += new System.EventHandler(this.initdropCPUName);
             // 
             // frameCPUQTY
             // 
@@ -408,6 +415,8 @@
             this.dropFormfactor.Name = "dropFormfactor";
             this.dropFormfactor.Size = new System.Drawing.Size(134, 21);
             this.dropFormfactor.TabIndex = 0;
+            this.dropFormfactor.SelectedValueChanged += new System.EventHandler(this.initdropCPUName);
+            this.dropFormfactor.TextChanged += new System.EventHandler(this.initdropCPUName);
             this.dropFormfactor.Leave += new System.EventHandler(this.dropFormfactor_Leave);
             // 
             // frameCPUType
@@ -617,7 +626,7 @@
             // 
             // frameCPUName
             // 
-            this.frameCPUName.Controls.Add(this.txtCPUName);
+            this.frameCPUName.Controls.Add(this.dropCPUName);
             this.frameCPUName.Location = new System.Drawing.Point(168, 311);
             this.frameCPUName.Name = "frameCPUName";
             this.frameCPUName.Size = new System.Drawing.Size(132, 44);
@@ -625,21 +634,13 @@
             this.frameCPUName.TabStop = false;
             this.frameCPUName.Text = "CPU Name";
             // 
-            // txtCPUName
-            // 
-            this.txtCPUName.Location = new System.Drawing.Point(3, 16);
-            this.txtCPUName.Name = "txtCPUName";
-            this.txtCPUName.Size = new System.Drawing.Size(123, 20);
-            this.txtCPUName.TabIndex = 0;
-            this.txtCPUName.Text = "N/A";
-            // 
             // frameWeight
             // 
             this.frameWeight.Controls.Add(this.label3);
             this.frameWeight.Controls.Add(this.txtWeight);
-            this.frameWeight.Location = new System.Drawing.Point(343, 72);
+            this.frameWeight.Location = new System.Drawing.Point(323, 72);
             this.frameWeight.Name = "frameWeight";
-            this.frameWeight.Size = new System.Drawing.Size(62, 44);
+            this.frameWeight.Size = new System.Drawing.Size(55, 44);
             this.frameWeight.TabIndex = 15;
             this.frameWeight.TabStop = false;
             this.frameWeight.Text = "Weight";
@@ -647,7 +648,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(46, 19);
+            this.label3.Location = new System.Drawing.Point(41, 18);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(15, 13);
             this.label3.TabIndex = 1;
@@ -657,13 +658,13 @@
             // 
             this.txtWeight.Location = new System.Drawing.Point(3, 16);
             this.txtWeight.Name = "txtWeight";
-            this.txtWeight.Size = new System.Drawing.Size(42, 20);
+            this.txtWeight.Size = new System.Drawing.Size(37, 20);
             this.txtWeight.TabIndex = 0;
             // 
             // frameHDDQty
             // 
             this.frameHDDQty.Controls.Add(this.spinHDDQty);
-            this.frameHDDQty.Location = new System.Drawing.Point(411, 72);
+            this.frameHDDQty.Location = new System.Drawing.Point(485, 72);
             this.frameHDDQty.Name = "frameHDDQty";
             this.frameHDDQty.Size = new System.Drawing.Size(70, 44);
             this.frameHDDQty.TabIndex = 28;
@@ -682,7 +683,7 @@
             // 
             this.frameHDDSize.Controls.Add(this.label4);
             this.frameHDDSize.Controls.Add(this.txtHDDSize);
-            this.frameHDDSize.Location = new System.Drawing.Point(489, 72);
+            this.frameHDDSize.Location = new System.Drawing.Point(561, 72);
             this.frameHDDSize.Name = "frameHDDSize";
             this.frameHDDSize.Size = new System.Drawing.Size(75, 44);
             this.frameHDDSize.TabIndex = 29;
@@ -692,7 +693,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(46, 19);
+            this.label4.Location = new System.Drawing.Point(46, 18);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(19, 13);
             this.label4.TabIndex = 1;
@@ -703,14 +704,14 @@
             this.txtHDDSize.Enabled = false;
             this.txtHDDSize.Location = new System.Drawing.Point(3, 16);
             this.txtHDDSize.Name = "txtHDDSize";
-            this.txtHDDSize.Size = new System.Drawing.Size(42, 20);
+            this.txtHDDSize.Size = new System.Drawing.Size(43, 20);
             this.txtHDDSize.TabIndex = 0;
             this.txtHDDSize.Text = "N/A";
             // 
             // frameHDDType
             // 
             this.frameHDDType.Controls.Add(this.dropHDDType);
-            this.frameHDDType.Location = new System.Drawing.Point(570, 72);
+            this.frameHDDType.Location = new System.Drawing.Point(642, 72);
             this.frameHDDType.Name = "frameHDDType";
             this.frameHDDType.Size = new System.Drawing.Size(90, 44);
             this.frameHDDType.TabIndex = 30;
@@ -730,7 +731,7 @@
             // frameHDDRPM
             // 
             this.frameHDDRPM.Controls.Add(this.dropHDDRPM);
-            this.frameHDDRPM.Location = new System.Drawing.Point(666, 72);
+            this.frameHDDRPM.Location = new System.Drawing.Point(735, 72);
             this.frameHDDRPM.Name = "frameHDDRPM";
             this.frameHDDRPM.Size = new System.Drawing.Size(90, 44);
             this.frameHDDRPM.TabIndex = 31;
@@ -750,9 +751,9 @@
             // frameHDDSerial
             // 
             this.frameHDDSerial.Controls.Add(this.txtHDDSerial);
-            this.frameHDDSerial.Location = new System.Drawing.Point(762, 72);
+            this.frameHDDSerial.Location = new System.Drawing.Point(831, 72);
             this.frameHDDSerial.Name = "frameHDDSerial";
-            this.frameHDDSerial.Size = new System.Drawing.Size(149, 44);
+            this.frameHDDSerial.Size = new System.Drawing.Size(142, 44);
             this.frameHDDSerial.TabIndex = 32;
             this.frameHDDSerial.TabStop = false;
             this.frameHDDSerial.Text = "HDD Serial";
@@ -762,14 +763,14 @@
             this.txtHDDSerial.Enabled = false;
             this.txtHDDSerial.Location = new System.Drawing.Point(3, 16);
             this.txtHDDSerial.Name = "txtHDDSerial";
-            this.txtHDDSerial.Size = new System.Drawing.Size(140, 20);
+            this.txtHDDSerial.Size = new System.Drawing.Size(130, 20);
             this.txtHDDSerial.TabIndex = 0;
             this.txtHDDSerial.Text = "N/A";
             // 
             // frameVideo
             // 
             this.frameVideo.Controls.Add(this.dropVideo);
-            this.frameVideo.Location = new System.Drawing.Point(340, 122);
+            this.frameVideo.Location = new System.Drawing.Point(323, 122);
             this.frameVideo.Name = "frameVideo";
             this.frameVideo.Size = new System.Drawing.Size(129, 44);
             this.frameVideo.TabIndex = 16;
@@ -836,7 +837,7 @@
             // frameOptical
             // 
             this.frameOptical.Controls.Add(this.dropOptical);
-            this.frameOptical.Location = new System.Drawing.Point(340, 172);
+            this.frameOptical.Location = new System.Drawing.Point(323, 172);
             this.frameOptical.Name = "frameOptical";
             this.frameOptical.Size = new System.Drawing.Size(129, 44);
             this.frameOptical.TabIndex = 19;
@@ -1584,7 +1585,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(37, 13);
             this.labelVersion.TabIndex = 43;
-            this.labelVersion.Text = "v1.0.0";
+            this.labelVersion.Text = "v1.1.0";
             // 
             // checkFG
             // 
@@ -1633,11 +1634,53 @@
             this.lblStatusBar2.Size = new System.Drawing.Size(0, 13);
             this.lblStatusBar2.TabIndex = 48;
             // 
+            // frameCaddyQTY
+            // 
+            this.frameCaddyQTY.Controls.Add(this.checkCaddyNA);
+            this.frameCaddyQTY.Controls.Add(this.spinCaddyQTY);
+            this.frameCaddyQTY.Location = new System.Drawing.Point(385, 72);
+            this.frameCaddyQTY.Name = "frameCaddyQTY";
+            this.frameCaddyQTY.Size = new System.Drawing.Size(94, 44);
+            this.frameCaddyQTY.TabIndex = 49;
+            this.frameCaddyQTY.TabStop = false;
+            this.frameCaddyQTY.Text = "HDD Caddy";
+            // 
+            // spinCaddyQTY
+            // 
+            this.spinCaddyQTY.Location = new System.Drawing.Point(11, 17);
+            this.spinCaddyQTY.Name = "spinCaddyQTY";
+            this.spinCaddyQTY.Size = new System.Drawing.Size(35, 20);
+            this.spinCaddyQTY.TabIndex = 1;
+            // 
+            // checkCaddyNA
+            // 
+            this.checkCaddyNA.AutoSize = true;
+            this.checkCaddyNA.Location = new System.Drawing.Point(52, 18);
+            this.checkCaddyNA.Name = "checkCaddyNA";
+            this.checkCaddyNA.Size = new System.Drawing.Size(41, 17);
+            this.checkCaddyNA.TabIndex = 45;
+            this.checkCaddyNA.TabStop = false;
+            this.checkCaddyNA.Text = "NA";
+            this.checkCaddyNA.UseVisualStyleBackColor = true;
+            // 
+            // dropCPUName
+            // 
+            this.dropCPUName.FormattingEnabled = true;
+            this.dropCPUName.Location = new System.Drawing.Point(3, 16);
+            this.dropCPUName.Name = "dropCPUName";
+            this.dropCPUName.Size = new System.Drawing.Size(121, 21);
+            this.dropCPUName.TabIndex = 0;
+            this.dropCPUName.SelectionChangeCommitted += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
+            this.dropCPUName.SelectedValueChanged += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
+            this.dropCPUName.TextChanged += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
+            this.dropCPUName.Leave += new System.EventHandler(this.dropCPUName_Leave);
+            // 
             // SpecSheet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 561);
+            this.Controls.Add(this.frameCaddyQTY);
             this.Controls.Add(this.lblStatusBar2);
             this.Controls.Add(this.lblStatusBar);
             this.Controls.Add(this.pictureBox1);
@@ -1722,7 +1765,6 @@
             this.frameCPUSpeed.ResumeLayout(false);
             this.frameCPUSpeed.PerformLayout();
             this.frameCPUName.ResumeLayout(false);
-            this.frameCPUName.PerformLayout();
             this.frameWeight.ResumeLayout(false);
             this.frameWeight.PerformLayout();
             this.frameHDDQty.ResumeLayout(false);
@@ -1756,6 +1798,9 @@
             this.framePorts.ResumeLayout(false);
             this.framePorts.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.frameCaddyQTY.ResumeLayout(false);
+            this.frameCaddyQTY.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spinCaddyQTY)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1805,7 +1850,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtCPUSpeed;
         private System.Windows.Forms.GroupBox frameCPUName;
-        private System.Windows.Forms.TextBox txtCPUName;
         private System.Windows.Forms.GroupBox frameWeight;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtWeight;
@@ -1906,6 +1950,10 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label lblStatusBar;
         private System.Windows.Forms.Label lblStatusBar2;
+        private System.Windows.Forms.GroupBox frameCaddyQTY;
+        private System.Windows.Forms.CheckBox checkCaddyNA;
+        private System.Windows.Forms.NumericUpDown spinCaddyQTY;
+        private System.Windows.Forms.ComboBox dropCPUName;
     }
 }
 

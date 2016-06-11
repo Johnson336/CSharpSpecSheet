@@ -54,14 +54,14 @@ namespace CSharpSpecSheet
 
             // create table to hold dropdown data
             //executeSQL("DROP TABLE IF EXISTS dropdown_data");
-            executeSQL("CREATE TABLE IF NOT EXISTS dropdown_data (category VARCHAR(50) NOT NULL, name VARCHAR(50) UNIQUE NOT NULL, frequency INT NOT NULL, id INT PRIMARY KEY)");
+            executeSQL("CREATE TABLE IF NOT EXISTS dropdown_data (category TEXT NOT NULL, name TEXT UNIQUE NOT NULL, frequency INT NOT NULL, id INT PRIMARY KEY)");
 
             //executeSQL("DROP TABLE IF EXISTS archive");
             executeSQL("CREATE TABLE IF NOT EXISTS archive ("+
                         "id INT PRIMARY KEY,"+
-                        "timestamp TIMESTAMP,"+
+                        "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,"+
                         "ispf TEXT NOT NULL,"+
-                        "date DATETIME,"+
+                        "date TEXT NOT NULL,"+
                         "condition TEXT NOT NULL,"+
                         "brand TEXT NOT NULL,"+
                         "brandother TEXT NOT NULL,"+
@@ -131,9 +131,15 @@ namespace CSharpSpecSheet
                         "scsi TEXT NOT NULL,"+
                         "displayport TEXT NOT NULL,"+
                         "version TEXT NOT NULL,"+
-                        "tester TEXT NOT NULL)"
+                        "tester TEXT NOT NULL,"+
+                        "caddyqty TEXT NOT NULL,"+
+                        "caddyna TEXT NOT NULL)"
                         );
-                
+
+            //executeSQL("DROP TABLE IF EXISTS cpu_data");
+            executeSQL("CREATE TABLE IF NOT EXISTS cpu_data (cpuseries TEXT NOT NULL, cputype TEXT NOT NULL, busspeed TEXT NOT NULL, cpuspeed TEXT NOT NULL, cpucores TEXT NOT NULL, model TEXT NOT NULL, formfactor TEXT NOT NULL, id INT PRIMARY KEY, UNIQUE(cpuseries, model, formfactor))");
+
+
         }
 
         private void initializeDropdowns()
@@ -149,9 +155,7 @@ namespace CSharpSpecSheet
 
         private void initDropdown(ComboBox drop)
         {
-            string sql = "SELECT * FROM dropdown_data WHERE category='" + drop.Name + "' ORDER BY frequency DESC";
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            SQLiteDataReader reader = executeSQLReader("SELECT * FROM dropdown_data WHERE category='" + drop.Name + "' ORDER BY frequency DESC");
             drop.Items.Clear();
             while (reader.Read())
             {
@@ -164,9 +168,15 @@ namespace CSharpSpecSheet
         {
             SQLiteCommand cmd = new SQLiteCommand(stmt, m_dbConnection);
 
-            lblStatusBar2.Text = lblStatusBar.Text;
-            lblStatusBar.Text = stmt + ": " + cmd.ExecuteNonQuery() + " rows affected.";
+            //lblStatusBar2.Text = lblStatusBar.Text;
+            //lblStatusBar.Text = stmt + ": " + cmd.ExecuteNonQuery() + " rows affected.";
+            cmd.ExecuteNonQuery();
+        }
 
+        private SQLiteDataReader executeSQLReader(string stmt)
+        {
+            SQLiteCommand command = new SQLiteCommand(stmt, m_dbConnection);
+            return command.ExecuteReader();
         }
 
         private void saveDropdown(ComboBox drop)
@@ -174,32 +184,21 @@ namespace CSharpSpecSheet
             if ((drop.Name == "") || (drop.Text == "")) {
                 return;
             }
-            /*string sql = "SELECT * FROM dropdown_data WHERE category='" + category + "' AND name='" + name + "'";
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
-            int frequency = 0;
-            while (reader.Read())
-            {
-                frequency = (int)reader["frequency"];
-            }
-            */
 
-
-            //sql = "insert into dropdown_data (category, name, frequency) values ('" + category + "', '" + name + "', " + frequency++ + ")";
-
-            /*sql = "UPDATE dropdown_data SET(category='" + category + "', name='" + name + "', frequency=" + ++frequency + ") WHERE category='" + category + "' AND name='" + name + "'"
-                    + " IF @@ROWCOUNT = 0"
-                    + " INSERT INTO dropdown_data VALUES ('" + category + "', '" + name + "', " + ++frequency + ")";
-
-            command = new SQLiteCommand(sql, m_dbConnection);
-            command.ExecuteNonQuery();
-            */
-            executeSQL("UPDATE OR IGNORE dropdown_data SET category='" + drop.Name + "', name='" + drop.Text + "', frequency = frequency + 1 WHERE category='" + drop.Name + "' AND name='" + drop.Text + "'");
+            //executeSQL("UPDATE OR IGNORE dropdown_data SET category='" + drop.Name + "', name='" + drop.Text + "', frequency = frequency + 1 WHERE category='" + drop.Name + "' AND name='" + drop.Text + "'");
+            executeSQL("UPDATE OR IGNORE dropdown_data SET frequency = frequency + 1 WHERE category='" + drop.Name + "' AND name='" + drop.Text + "'");
 
             executeSQL("INSERT OR IGNORE INTO dropdown_data (category, name, frequency) VALUES ('" + drop.Name + "', '" + drop.Text + "', 1)");
 
 
             initDropdown(drop);
+        }
+
+        private void saveCPUInfo()
+        {
+            //executeSQL("UPDATE OR IGNORE cpu_data SET cpuseries='" + dropCPUName.Text + "', cputype='" + dropCPUType.Text + "', busspeed='" + txtBusSpeed.Text + "', cpuspeed='" + double.Parse(txtCPUSpeed.Text) + ", cpucores='" + spinCPUCores.Value + "' WHERE cpuseries='" + dropCPUName.Text + "'");
+            executeSQL("UPDATE OR IGNORE cpu_data SET cputype='" + dropCPUType.Text + "', busspeed='" + txtBusSpeed.Text + "', cpuspeed='" + Math.Round(double.Parse(txtCPUSpeed.Text), 2) + "', cpucores='" + spinCPUCores.Value + "' WHERE cpuseries='" + dropCPUName.Text + "' AND model='" + txtModel.Text + "' AND formfactor='" + dropFormfactor.Text + "'");
+            executeSQL("INSERT OR IGNORE INTO cpu_data (cpuseries, cputype, busspeed, cpuspeed, cpucores, model, formfactor) VALUES('" + dropCPUName.Text + "', '" + dropCPUType.Text + "', '" + txtBusSpeed.Text + "', '" + Math.Round(double.Parse(txtCPUSpeed.Text), 2) + "', '" + spinCPUCores.Value + "', '" + txtModel.Text + "', '" + dropFormfactor.Text + "')");
         }
 
         private void setDate()
@@ -386,8 +385,10 @@ namespace CSharpSpecSheet
         {
             //performPrint();
             archiveSerial();
+            saveCPUInfo();
 
         }
+
 
 
         private void performPrint()
@@ -452,7 +453,7 @@ namespace CSharpSpecSheet
                 "condition='" + dropCondition.Text + "', " +
                 "brand='" + dropBrand.Text + "', " +
                 "brandother='" + txtBrandOther.Text + "', " +
-                "serial='" + txtSerial.Text + "', " +
+                //"serial='" + txtSerial.Text + "', " +
                 "model='" + txtModel.Text + "', " +
                 "formfactor='" + dropFormfactor.Text + "', " +
                 "cpuqty='" + spinCPUQty.Value + "', " +
@@ -461,7 +462,7 @@ namespace CSharpSpecSheet
                 "cpuspeed='" + txtCPUSpeed.Text + "', " +
                 "cputype='" + dropCPUType.Text + "', " +
                 "busspeed='" + txtBusSpeed.Text + "', " +
-                "cpuname='" + txtCPUName.Text + "', " +
+                "cpuname='" + dropCPUName.Text + "', " +
                 "memorysize='" + dropMemorySize.Text + "', " +
                 "memoryrating='" + dropMemoryRating.Text + "', " +
                 "memorytype='" + dropMemoryType.Text + "', " +
@@ -518,10 +519,12 @@ namespace CSharpSpecSheet
                 "scsi='" + txtSCSI.Text + "', " +
                 "displayport='" + txtDisplayPort.Text + "', " +
                 "version='" + labelVersion.Text + "', " +
-                "tester='" + txtTester.Text + "' " +
+                "tester='" + txtTester.Text + "', "+
+                "caddyqty='" + spinCaddyQTY.Value + "', "+
+                "caddyna='" + checkCaddyNA.Checked + "' "+
                 "WHERE serial='" + txtSerial.Text + "'");
 
-            executeSQL("INSERT OR IGNORE INTO archive (ispf, date, condition, brand, brandother, serial, model, formfactor, cpuqty, cpucores, checkht, cpuspeed, cputype, busspeed, cpuname, memorysize, memoryrating, memorytype, memoryspeed, weight, hddqty, hddsize, hddtype, hddrpm, hddserial, video, videomodel, vram, optical, drivesnone, drivesfdd, drivestape, lcdsize, networknone, ethernet, modem, wifi, bt, coa, osno, osyes, notes, accnone, accac, accpower, accbatt, accextbatt, accfinger, accwebcam, acckeyboard, accmouse, damage, usb, numethernet, nummodem, vga, dvi, svideo, ps2, audio, esatap, numserial, parallel, pcmcia, sdcard, firewire, esata, hdmi, scsi, displayport, version, tester) "+
+            executeSQL("INSERT OR IGNORE INTO archive (ispf, date, condition, brand, brandother, serial, model, formfactor, cpuqty, cpucores, checkht, cpuspeed, cputype, busspeed, cpuname, memorysize, memoryrating, memorytype, memoryspeed, weight, hddqty, hddsize, hddtype, hddrpm, hddserial, video, videomodel, vram, optical, drivesnone, drivesfdd, drivestape, lcdsize, networknone, ethernet, modem, wifi, bt, coa, osno, osyes, notes, accnone, accac, accpower, accbatt, accextbatt, accfinger, accwebcam, acckeyboard, accmouse, damage, usb, numethernet, nummodem, vga, dvi, svideo, ps2, audio, esatap, numserial, parallel, pcmcia, sdcard, firewire, esata, hdmi, scsi, displayport, version, tester, caddyqty, caddyna) "+
                 "VALUES ('" + txtISPF.Text + "', " +
                 "'" + labelDate.Text + "', " +
                 "'" + dropCondition.Text + "', " +
@@ -536,7 +539,7 @@ namespace CSharpSpecSheet
                 "'" + txtCPUSpeed.Text + "', " +
                 "'" + dropCPUType.Text + "', " +
                 "'" + txtBusSpeed.Text + "', " +
-                "'" + txtCPUName.Text + "', " +
+                "'" + dropCPUName.Text + "', " +
                 "'" + dropMemorySize.Text + "', " +
                 "'" + dropMemoryRating.Text + "', " +
                 "'" + dropMemoryType.Text + "', " +
@@ -593,7 +596,9 @@ namespace CSharpSpecSheet
                 "'" + txtSCSI.Text + "', " +
                 "'" + txtDisplayPort.Text + "', " +
                 "'" + labelVersion.Text + "', " +
-                "'" + txtTester.Text + "')"
+                "'" + txtTester.Text + "', " +
+                "'" + spinCaddyQTY.Value + "', " +
+                "'" + checkCaddyNA.Checked + "')"
 
 
                 );
@@ -634,7 +639,7 @@ namespace CSharpSpecSheet
                 txtCPUSpeed.Text = input[11];
                 dropCPUType.Text = input[12];
                 txtBusSpeed.Text = input[13];
-                txtCPUName.Text = input[14];
+                dropCPUName.Text = input[14];
                 dropMemorySize.Text = input[15];
                 dropMemoryRating.Text = input[16];
                 dropMemoryType.Text = input[17];
@@ -698,9 +703,7 @@ namespace CSharpSpecSheet
             */
 
             // new load method using sqlite database
-            string sql = "SELECT * FROM archive WHERE serial='" + s + "' ORDER BY timestamp DESC";
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-            SQLiteDataReader input = command.ExecuteReader();
+            SQLiteDataReader input = executeSQLReader("SELECT * FROM archive WHERE serial='" + s + "' ORDER BY timestamp DESC");
             while (input.Read())
             {
 
@@ -709,7 +712,7 @@ namespace CSharpSpecSheet
                 dropCondition.Text = (string)input["condition"];
                 dropBrand.Text = (string)input["brand"];
                 txtBrandOther.Text = (string)input["brandother"];
-                txtSerial.Text = (string)input["serial"];
+                //txtSerial.Text = (string)input["serial"];
                 txtModel.Text = (string)input["model"];
                 dropFormfactor.Text = (string)input["formfactor"];
                 spinCPUQty.Value = int.Parse((string)input["cpuqty"]);
@@ -718,7 +721,7 @@ namespace CSharpSpecSheet
                 txtCPUSpeed.Text = (string)input["cpuspeed"];
                 dropCPUType.Text = (string)input["cputype"];
                 txtBusSpeed.Text = (string)input["busspeed"];
-                txtCPUName.Text = (string)input["cpuname"];
+                dropCPUName.Text = (string)input["cpuname"];
                 dropMemorySize.Text = (string)input["memorysize"];
                 dropMemoryRating.Text = (string)input["memoryrating"];
                 dropMemoryType.Text = (string)input["memorytype"];
@@ -776,6 +779,8 @@ namespace CSharpSpecSheet
                 txtDisplayPort.Text = (string)input["displayport"];
                 //labelVersion.Text = input[70];
                 txtTester.Text = (string)input["tester"];
+                spinCaddyQTY.Value = int.Parse((string)input["caddyqty"]);
+                checkCaddyNA.Checked = bool.Parse((string)input["caddyna"]);
             }
 
 
@@ -793,6 +798,7 @@ namespace CSharpSpecSheet
             setDate();
 
             m_dbConnection.Close();
+            
             initializeDatabase();
             initializeDropdowns();
         }
@@ -800,6 +806,7 @@ namespace CSharpSpecSheet
         private void SpecSheet_FormClosing(object sender, FormClosingEventArgs e)
         {
             m_dbConnection.Close();
+            
         }
 
         private void dropFormfactor_Leave(object sender, EventArgs e)
@@ -874,12 +881,56 @@ namespace CSharpSpecSheet
 
         private void dropCPUType_SelectedValueChanged(object sender, EventArgs e)
         {
-            txtCPUName.Text = "";
+            dropCPUName.Text = "";
         }
 
         private void dropCPUType_TextUpdate(object sender, EventArgs e)
         {
-            txtCPUName.Text = "";
+            dropCPUName.Text = "";
+        }
+
+        private void adminButton_Click(object sender, EventArgs e)
+        {
+            AdminMenu adminWindow = new AdminMenu();
+            adminWindow.Show();
+        }
+
+        private void dropCPUName_Leave(object sender, EventArgs e)
+        {
+            saveDropdown((ComboBox)sender);
+        }
+
+        private void dropCPUName_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            // load up cpu informations from database
+            SQLiteDataReader result = executeSQLReader("SELECT * FROM cpu_data WHERE cpuseries='" + dropCPUName.Text + "'");
+            while (result.Read())
+            {
+                dropCPUType.Text = (string)result["cputype"];
+                txtBusSpeed.Text = (string)result["busspeed"];
+                txtCPUSpeed.Text = (string)result["cpuspeed"];
+                spinCPUCores.Value = int.Parse((string)result["cpucores"]);
+            }
+        }
+
+
+        private void initdropCPUName(object sender, EventArgs e)
+        {
+            //load up cpu list from database
+            SQLiteDataReader result = executeSQLReader("SELECT * FROM cpu_data WHERE model='" + txtModel.Text + "' AND formfactor='" + dropFormfactor.Text + "'");
+            if (result.HasRows)
+            {
+                dropCPUName.Text = "";
+                dropCPUName.Items.Clear();
+                while (result.Read())
+                {
+                    dropCPUName.Items.Add(result["cpuseries"]);
+                }
+            } else
+            {
+                initDropdown(dropCPUName);
+            }
+
         }
     }
 }
