@@ -137,7 +137,7 @@ namespace CSharpSpecSheet
                         );
 
             //executeSQL("DROP TABLE IF EXISTS cpu_data");
-            executeSQL("CREATE TABLE IF NOT EXISTS cpu_data (cpuseries TEXT NOT NULL, cputype TEXT NOT NULL, busspeed TEXT NOT NULL, cpuspeed TEXT NOT NULL, cpucores TEXT NOT NULL, model TEXT NOT NULL, formfactor TEXT NOT NULL, id INT PRIMARY KEY, UNIQUE(cpuseries, model, formfactor))");
+            executeSQL("CREATE TABLE IF NOT EXISTS cpu_data (cpuseries TEXT NOT NULL, cputype TEXT NOT NULL, busspeed TEXT NOT NULL, cpuspeed TEXT NOT NULL, cpucores TEXT NOT NULL, cpuht TEXT NOT NULL, model TEXT NOT NULL, formfactor TEXT NOT NULL, id INT PRIMARY KEY, UNIQUE(cpuseries, model, formfactor))");
 
 
         }
@@ -197,8 +197,8 @@ namespace CSharpSpecSheet
         private void saveCPUInfo()
         {
             //executeSQL("UPDATE OR IGNORE cpu_data SET cpuseries='" + dropCPUName.Text + "', cputype='" + dropCPUType.Text + "', busspeed='" + txtBusSpeed.Text + "', cpuspeed='" + double.Parse(txtCPUSpeed.Text) + ", cpucores='" + spinCPUCores.Value + "' WHERE cpuseries='" + dropCPUName.Text + "'");
-            executeSQL("UPDATE OR IGNORE cpu_data SET cputype='" + dropCPUType.Text + "', busspeed='" + txtBusSpeed.Text + "', cpuspeed='" + Math.Round(double.Parse(txtCPUSpeed.Text), 2) + "', cpucores='" + spinCPUCores.Value + "' WHERE cpuseries='" + dropCPUName.Text + "' AND model='" + txtModel.Text + "' AND formfactor='" + dropFormfactor.Text + "'");
-            executeSQL("INSERT OR IGNORE INTO cpu_data (cpuseries, cputype, busspeed, cpuspeed, cpucores, model, formfactor) VALUES('" + dropCPUName.Text + "', '" + dropCPUType.Text + "', '" + txtBusSpeed.Text + "', '" + Math.Round(double.Parse(txtCPUSpeed.Text), 2) + "', '" + spinCPUCores.Value + "', '" + txtModel.Text + "', '" + dropFormfactor.Text + "')");
+            executeSQL("UPDATE OR IGNORE cpu_data SET cputype='" + dropCPUType.Text + "', busspeed='" + txtBusSpeed.Text + "', cpuspeed='" + Math.Round(double.Parse(txtCPUSpeed.Text), 2) + "', cpucores='" + spinCPUCores.Value + "', cpuht='" + checkHT.Checked + "' WHERE cpuseries='" + dropCPUName.Text + "' AND model='" + txtModel.Text + "' AND formfactor='" + dropFormfactor.Text + "'");
+            executeSQL("INSERT OR IGNORE INTO cpu_data (cpuseries, cputype, busspeed, cpuspeed, cpucores, cpuht, model, formfactor) VALUES('" + dropCPUName.Text + "', '" + dropCPUType.Text + "', '" + txtBusSpeed.Text + "', '" + Math.Round(double.Parse(txtCPUSpeed.Text), 2) + "', '" + spinCPUCores.Value + "', '" + checkHT.Checked + "', '" + txtModel.Text + "', '" + dropFormfactor.Text + "')");
         }
 
         private void setDate()
@@ -910,6 +910,7 @@ namespace CSharpSpecSheet
                 txtBusSpeed.Text = (string)result["busspeed"];
                 txtCPUSpeed.Text = (string)result["cpuspeed"];
                 spinCPUCores.Value = int.Parse((string)result["cpucores"]);
+                checkHT.Checked = bool.Parse((string)result["cpuht"]);
             }
         }
 
@@ -920,7 +921,6 @@ namespace CSharpSpecSheet
             SQLiteDataReader result = executeSQLReader("SELECT * FROM cpu_data WHERE model='" + txtModel.Text + "' AND formfactor='" + dropFormfactor.Text + "'");
             if (result.HasRows)
             {
-                dropCPUName.Text = "";
                 dropCPUName.Items.Clear();
                 while (result.Read())
                 {
