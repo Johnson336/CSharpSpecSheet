@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace CSharpSpecSheet
 {
@@ -64,7 +65,6 @@ namespace CSharpSpecSheet
                         "date TEXT NOT NULL,"+
                         "condition TEXT NOT NULL,"+
                         "brand TEXT NOT NULL,"+
-                        "brandother TEXT NOT NULL,"+
                         "serial TEXT UNIQUE NOT NULL,"+
                         "model TEXT NOT NULL,"+
                         "formfactor TEXT NOT NULL,"+
@@ -381,15 +381,51 @@ namespace CSharpSpecSheet
             }
         }
 
+        private string SerializeObject(ComboBox toSerialize)
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(toSerialize.GetType());
+
+            using (StringWriter textWriter = new StringWriter())
+            {
+                xmlSerializer.Serialize(textWriter, toSerialize);
+                return textWriter.ToString();
+            }
+        }
+
         private void printButton_Click(object sender, EventArgs e)
         {
             //performPrint();
+
+
             archiveSerial();
             saveCPUInfo();
 
         }
 
+        private void generateLabel()
+        {
 
+            string directory = AppDomain.CurrentDomain.BaseDirectory + "data";
+            System.IO.Directory.CreateDirectory(directory); // create archive directory if it doesn't already exist 
+            string filename = directory + "\\SpecSheetData.csv";
+
+            string output = txtISPF.Text + ", " + labelDate.Text + ", " + dropCondition.Text + ", " + dropBrand.Text + ", " + txtSerial.Text + ", " +
+                txtModel.Text + ", " + dropFormfactor.Text + ", " + spinCPUQty.Value + ", " + spinCPUCores.Value + ", " + checkHT.Checked + ", " + txtCPUSpeed.Text + ", " +
+                dropCPUType.Text + ", " + txtBusSpeed.Text + ", " + dropCPUName.Text + ", " + dropMemorySize.Text + ", " + dropMemoryRating.Text + ", " + dropMemoryType.Text + ", " +
+                dropMemorySpeed.Text + ", " + txtWeight.Text + ", " + spinHDDQty.Value + ", " + txtHDDSize.Text + ", " + dropHDDType.Text + ", " + dropHDDRPM.Text + ", " +
+                txtHDDSerial.Text + ", " + dropVideo.Text + ", " + txtVideoModel.Text + ", " + txtVRAM.Text + ", " + dropOptical.Text + ", " + checkDrivesNone.Checked + ", " +
+                checkDrivesFDD.Checked + ", " + checkDrivesTape.Checked + ", " + txtLCDSize.Text + ", " + checkNetworkNone.Checked + ", " + checkEthernet.Checked + ", " +
+                checkModem.Checked + ", " + checkWiFi.Checked + ", " + checkBT.Checked + ", " + dropCOA.Text + ", " + radioOSNo.Checked + ", " + radioOSYes.Checked + ", " +
+                txtNotes.Text + ", " + checkAccNone.Checked + ", " + checkAccAC.Checked + ", " + checkAccPower.Checked + ", " + checkAccBatt.Checked + ", " +
+                checkAccExtBatt.Checked + ", " + checkAccFinger.Checked + ", " + checkAccWebcam.Checked + ", " + checkAccKeyboard.Checked + ", " + checkAccMouse.Checked + ", " +
+                dropDamage.Text + ", " + txtUSB.Text + ", " + txtEthernet.Text + ", " + txtModem.Text + ", " + txtVGA.Text + ", " + txtDVI.Text + ", " + txtSVideo.Text + ", " +
+                txtPS2.Text + ", " + txtAudio.Text + ", " + txteSATAp.Text + ", " + txtNumSerial.Text + ", " + txtParallel.Text + ", " + txtPCMCIA.Text + ", " +
+                txtSDCard.Text + ", " + txtFirewire.Text + ", " + txteSATA.Text + ", " + txtHDMI.Text + ", " + txtSCSI.Text + ", " + txtDisplayPort.Text + ", " +
+                labelVersion.Text + ", " + txtTester.Text;
+
+            File.WriteAllText(filename, output);
+
+        }
 
         private void performPrint()
         {
@@ -429,9 +465,9 @@ namespace CSharpSpecSheet
             System.IO.Directory.CreateDirectory(directory); // create archive directory if it doesn't already exist 
             string filename = directory + "\\" + txtSerial.Text + ".csv";
 
-            string output = txtISPF.Text + ", " + labelDate.Text + ", " + dropCondition.Text + ", " + dropBrand.Text + ", " + txtBrandOther.Text + ", " + txtSerial.Text + ", " + 
+            string output = txtISPF.Text + ", " + labelDate.Text + ", " + dropCondition.Text + ", " + dropBrand.Text + ", " + txtSerial.Text + ", " + 
                 txtModel.Text + ", " + dropFormfactor.Text + ", " + spinCPUQty.Value + ", " + spinCPUCores.Value + ", " + checkHT.Checked + ", " + txtCPUSpeed.Text + ", " + 
-                dropCPUType.Text + ", " + txtBusSpeed.Text + ", " + txtCPUName.Text + ", " + dropMemorySize.Text + ", " + dropMemoryRating.Text + ", " + dropMemoryType.Text + ", " + 
+                dropCPUType.Text + ", " + txtBusSpeed.Text + ", " + dropCPUName.Text + ", " + dropMemorySize.Text + ", " + dropMemoryRating.Text + ", " + dropMemoryType.Text + ", " + 
                 dropMemorySpeed.Text + ", " + txtWeight.Text + ", " + spinHDDQty.Value + ", " + txtHDDSize.Text + ", " + dropHDDType.Text + ", " + dropHDDRPM.Text + ", " + 
                 txtHDDSerial.Text + ", " + dropVideo.Text + ", " + txtVideoModel.Text + ", " + txtVRAM.Text + ", " + dropOptical.Text + ", " + checkDrivesNone.Checked + ", " + 
                 checkDrivesFDD.Checked + ", " + checkDrivesTape.Checked + ", " + txtLCDSize.Text + ", " + checkNetworkNone.Checked + ", " + checkEthernet.Checked + ", " + 
@@ -452,7 +488,6 @@ namespace CSharpSpecSheet
                 "date='" + labelDate.Text + "', " +
                 "condition='" + dropCondition.Text + "', " +
                 "brand='" + dropBrand.Text + "', " +
-                "brandother='" + txtBrandOther.Text + "', " +
                 //"serial='" + txtSerial.Text + "', " +
                 "model='" + txtModel.Text + "', " +
                 "formfactor='" + dropFormfactor.Text + "', " +
@@ -521,15 +556,16 @@ namespace CSharpSpecSheet
                 "version='" + labelVersion.Text + "', " +
                 "tester='" + txtTester.Text + "', "+
                 "caddyqty='" + spinCaddyQTY.Value + "', "+
-                "caddyna='" + checkCaddyNA.Checked + "' "+
+                "caddyna='" + checkCaddyNA.Checked + "', "+
+                "checkmcf='" + checkMCF.Checked + "', "+
+                "checkfg='" + checkFG.Checked + "' "+
                 "WHERE serial='" + txtSerial.Text + "'");
 
-            executeSQL("INSERT OR IGNORE INTO archive (ispf, date, condition, brand, brandother, serial, model, formfactor, cpuqty, cpucores, checkht, cpuspeed, cputype, busspeed, cpuname, memorysize, memoryrating, memorytype, memoryspeed, weight, hddqty, hddsize, hddtype, hddrpm, hddserial, video, videomodel, vram, optical, drivesnone, drivesfdd, drivestape, lcdsize, networknone, ethernet, modem, wifi, bt, coa, osno, osyes, notes, accnone, accac, accpower, accbatt, accextbatt, accfinger, accwebcam, acckeyboard, accmouse, damage, usb, numethernet, nummodem, vga, dvi, svideo, ps2, audio, esatap, numserial, parallel, pcmcia, sdcard, firewire, esata, hdmi, scsi, displayport, version, tester, caddyqty, caddyna) "+
+            executeSQL("INSERT OR IGNORE INTO archive (ispf, date, condition, brand, serial, model, formfactor, cpuqty, cpucores, checkht, cpuspeed, cputype, busspeed, cpuname, memorysize, memoryrating, memorytype, memoryspeed, weight, hddqty, hddsize, hddtype, hddrpm, hddserial, video, videomodel, vram, optical, drivesnone, drivesfdd, drivestape, lcdsize, networknone, ethernet, modem, wifi, bt, coa, osno, osyes, notes, accnone, accac, accpower, accbatt, accextbatt, accfinger, accwebcam, acckeyboard, accmouse, damage, usb, numethernet, nummodem, vga, dvi, svideo, ps2, audio, esatap, numserial, parallel, pcmcia, sdcard, firewire, esata, hdmi, scsi, displayport, version, tester, caddyqty, caddyna, checkmcf, checkfg) "+
                 "VALUES ('" + txtISPF.Text + "', " +
                 "'" + labelDate.Text + "', " +
                 "'" + dropCondition.Text + "', " +
                 "'" + dropBrand.Text + "', " +
-                "'" + txtBrandOther.Text + "', " +
                 "'" + txtSerial.Text + "', " +
                 "'" + txtModel.Text + "', " +
                 "'" + dropFormfactor.Text + "', " +
@@ -598,7 +634,9 @@ namespace CSharpSpecSheet
                 "'" + labelVersion.Text + "', " +
                 "'" + txtTester.Text + "', " +
                 "'" + spinCaddyQTY.Value + "', " +
-                "'" + checkCaddyNA.Checked + "')"
+                "'" + checkCaddyNA.Checked + "', " + 
+                "'" + checkMCF.Checked + "', " +
+                "'" + checkFG.Checked + "')"
 
 
                 );
@@ -629,7 +667,6 @@ namespace CSharpSpecSheet
                 //labelDate.Text = input[1];
                 dropCondition.Text = input[2];
                 dropBrand.Text = input[3];
-                txtBrandOther.Text = input[4];
                 txtSerial.Text = input[5];
                 txtModel.Text = input[6];
                 dropFormfactor.Text = input[7];
@@ -711,7 +748,6 @@ namespace CSharpSpecSheet
                 //labelDate.Text = input[1];
                 dropCondition.Text = (string)input["condition"];
                 dropBrand.Text = (string)input["brand"];
-                txtBrandOther.Text = (string)input["brandother"];
                 //txtSerial.Text = (string)input["serial"];
                 txtModel.Text = (string)input["model"];
                 dropFormfactor.Text = (string)input["formfactor"];
@@ -931,6 +967,66 @@ namespace CSharpSpecSheet
                 initDropdown(dropCPUName);
             }
 
+        }
+
+        private string[,] memory_matrix = new string[15,3] { 
+                          { "DDR", "100MHz", "PC-1600" },
+                          { "DDR", "133MHz", "PC-2100" },
+                          { "DDR", "166MHz", "PC-2700" },
+                          { "DDR", "200MHz", "PC-3200" },
+                          { "DDR2", "400MHz", "PC2-3200" },
+                          { "DDR2", "533MHz", "PC2-4200" },
+                          { "DDR2", "667MHz", "PC2-5300" },
+                          { "DDR2", "800MHz", "PC2-6400" },
+                          { "DDR2", "1066MHz", "PC2-8500" },
+                          { "DDR3", "800MHz", "PC3-6400" },
+                          { "DDR3", "1066MHz", "PC3-8500" },
+                          { "DDR3", "1333MHz", "PC3-10600" },
+                          { "DDR3", "1600MHz", "PC3-12800" },
+                          { "DDR3", "1866MHz", "PC3-14900" },
+                          { "DDR3", "2133MHz", "PC3-17000" }
+                        };
+
+        private void dropMemoryRating_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            for (int i=0;i < (memory_matrix.Length/3);i++) 
+            {
+                if (dropMemoryRating.Text.Equals(memory_matrix[i,2]))
+                {
+                    dropMemorySpeed.Text = memory_matrix[i,1];
+                    dropMemoryType.Text = memory_matrix[i,0];
+                }
+            }
+
+        }
+
+        private void buttonAddModule_Click(object sender, EventArgs e)
+        {
+            string module = dropMemorySize.Text + " " + dropMemoryType.Text + " " + dropMemoryRating.Text;
+            listMemoryModules.Items.Add(module);
+
+        }
+
+        private void buttonRemoveModule_Click(object sender, EventArgs e)
+        {
+            if (listMemoryModules.SelectedIndex != -1)
+            {
+                for (int i = listMemoryModules.SelectedItems.Count - 1; i >= 0; i--)
+                    listMemoryModules.Items.Remove(listMemoryModules.SelectedItems[i]);
+            }
+            listMemoryModules.ClearSelected();
+        }
+
+        private void checkFG_CheckedChanged(object sender, EventArgs e)
+        {
+            buttonAddModule.Visible = checkFG.Checked;
+            buttonRemoveModule.Visible = checkFG.Checked;
+            frameMemoryModules.Visible = checkFG.Checked;
+            listMemoryModules.Visible = checkFG.Checked;
+            frameMemoryType.Visible = !checkFG.Checked;
+            dropMemoryType.Visible = !checkFG.Checked;
+            frameMemorySpeed.Visible = !checkFG.Checked;
+            dropMemorySpeed.Visible = !checkFG.Checked;
         }
     }
 }

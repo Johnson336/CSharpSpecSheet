@@ -40,7 +40,6 @@
             this.frameTester = new System.Windows.Forms.GroupBox();
             this.txtTester = new System.Windows.Forms.TextBox();
             this.frameBrand = new System.Windows.Forms.GroupBox();
-            this.txtBrandOther = new System.Windows.Forms.TextBox();
             this.dropBrand = new System.Windows.Forms.ComboBox();
             this.frameModel = new System.Windows.Forms.GroupBox();
             this.txtModel = new System.Windows.Forms.TextBox();
@@ -73,6 +72,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtCPUSpeed = new System.Windows.Forms.TextBox();
             this.frameCPUName = new System.Windows.Forms.GroupBox();
+            this.dropCPUName = new System.Windows.Forms.ComboBox();
             this.frameWeight = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtWeight = new System.Windows.Forms.TextBox();
@@ -172,9 +172,12 @@
             this.lblStatusBar = new System.Windows.Forms.Label();
             this.lblStatusBar2 = new System.Windows.Forms.Label();
             this.frameCaddyQTY = new System.Windows.Forms.GroupBox();
-            this.spinCaddyQTY = new System.Windows.Forms.NumericUpDown();
             this.checkCaddyNA = new System.Windows.Forms.CheckBox();
-            this.dropCPUName = new System.Windows.Forms.ComboBox();
+            this.spinCaddyQTY = new System.Windows.Forms.NumericUpDown();
+            this.frameMemoryModules = new System.Windows.Forms.GroupBox();
+            this.buttonAddModule = new System.Windows.Forms.Button();
+            this.buttonRemoveModule = new System.Windows.Forms.Button();
+            this.listMemoryModules = new System.Windows.Forms.ListBox();
             this.frameISPF.SuspendLayout();
             this.frameTester.SuspendLayout();
             this.frameBrand.SuspendLayout();
@@ -218,6 +221,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.frameCaddyQTY.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spinCaddyQTY)).BeginInit();
+            this.frameMemoryModules.SuspendLayout();
             this.SuspendLayout();
             // 
             // frameISPF
@@ -317,30 +321,20 @@
             // 
             // frameBrand
             // 
-            this.frameBrand.Controls.Add(this.txtBrandOther);
             this.frameBrand.Controls.Add(this.dropBrand);
             this.frameBrand.Location = new System.Drawing.Point(10, 122);
             this.frameBrand.Name = "frameBrand";
-            this.frameBrand.Size = new System.Drawing.Size(155, 44);
+            this.frameBrand.Size = new System.Drawing.Size(129, 44);
             this.frameBrand.TabIndex = 2;
             this.frameBrand.TabStop = false;
             this.frameBrand.Text = "Brand";
-            // 
-            // txtBrandOther
-            // 
-            this.txtBrandOther.Enabled = false;
-            this.txtBrandOther.Location = new System.Drawing.Point(88, 16);
-            this.txtBrandOther.Name = "txtBrandOther";
-            this.txtBrandOther.Size = new System.Drawing.Size(55, 20);
-            this.txtBrandOther.TabIndex = 1;
-            this.txtBrandOther.Text = "N/A";
             // 
             // dropBrand
             // 
             this.dropBrand.FormattingEnabled = true;
             this.dropBrand.Location = new System.Drawing.Point(3, 16);
             this.dropBrand.Name = "dropBrand";
-            this.dropBrand.Size = new System.Drawing.Size(79, 21);
+            this.dropBrand.Size = new System.Drawing.Size(120, 21);
             this.dropBrand.TabIndex = 0;
             this.dropBrand.Leave += new System.EventHandler(this.dropBrand_Leave);
             // 
@@ -481,7 +475,7 @@
             // frameMemoryRating
             // 
             this.frameMemoryRating.Controls.Add(this.dropMemoryRating);
-            this.frameMemoryRating.Location = new System.Drawing.Point(10, 459);
+            this.frameMemoryRating.Location = new System.Drawing.Point(7, 459);
             this.frameMemoryRating.Name = "frameMemoryRating";
             this.frameMemoryRating.Size = new System.Drawing.Size(129, 44);
             this.frameMemoryRating.TabIndex = 13;
@@ -495,6 +489,8 @@
             this.dropMemoryRating.Name = "dropMemoryRating";
             this.dropMemoryRating.Size = new System.Drawing.Size(121, 21);
             this.dropMemoryRating.TabIndex = 0;
+            this.dropMemoryRating.SelectedIndexChanged += new System.EventHandler(this.dropMemoryRating_SelectedIndexChanged);
+            this.dropMemoryRating.TextChanged += new System.EventHandler(this.dropMemoryRating_SelectedIndexChanged);
             this.dropMemoryRating.Leave += new System.EventHandler(this.dropMemoryRating_Leave);
             // 
             // frameMemorySpeed
@@ -633,6 +629,18 @@
             this.frameCPUName.TabIndex = 10;
             this.frameCPUName.TabStop = false;
             this.frameCPUName.Text = "CPU Name";
+            // 
+            // dropCPUName
+            // 
+            this.dropCPUName.FormattingEnabled = true;
+            this.dropCPUName.Location = new System.Drawing.Point(3, 16);
+            this.dropCPUName.Name = "dropCPUName";
+            this.dropCPUName.Size = new System.Drawing.Size(121, 21);
+            this.dropCPUName.TabIndex = 0;
+            this.dropCPUName.SelectionChangeCommitted += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
+            this.dropCPUName.SelectedValueChanged += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
+            this.dropCPUName.TextChanged += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
+            this.dropCPUName.Leave += new System.EventHandler(this.dropCPUName_Leave);
             // 
             // frameWeight
             // 
@@ -1043,6 +1051,7 @@
             // 
             // txtNotes
             // 
+            this.txtNotes.AcceptsReturn = true;
             this.txtNotes.AllowDrop = true;
             this.txtNotes.Location = new System.Drawing.Point(3, 16);
             this.txtNotes.Multiline = true;
@@ -1597,6 +1606,7 @@
             this.checkFG.TabStop = false;
             this.checkFG.Text = "FG";
             this.checkFG.UseVisualStyleBackColor = true;
+            this.checkFG.CheckedChanged += new System.EventHandler(this.checkFG_CheckedChanged);
             // 
             // checkMCF
             // 
@@ -1645,13 +1655,6 @@
             this.frameCaddyQTY.TabStop = false;
             this.frameCaddyQTY.Text = "HDD Caddy";
             // 
-            // spinCaddyQTY
-            // 
-            this.spinCaddyQTY.Location = new System.Drawing.Point(11, 17);
-            this.spinCaddyQTY.Name = "spinCaddyQTY";
-            this.spinCaddyQTY.Size = new System.Drawing.Size(35, 20);
-            this.spinCaddyQTY.TabIndex = 1;
-            // 
             // checkCaddyNA
             // 
             this.checkCaddyNA.AutoSize = true;
@@ -1663,23 +1666,64 @@
             this.checkCaddyNA.Text = "NA";
             this.checkCaddyNA.UseVisualStyleBackColor = true;
             // 
-            // dropCPUName
+            // spinCaddyQTY
             // 
-            this.dropCPUName.FormattingEnabled = true;
-            this.dropCPUName.Location = new System.Drawing.Point(3, 16);
-            this.dropCPUName.Name = "dropCPUName";
-            this.dropCPUName.Size = new System.Drawing.Size(121, 21);
-            this.dropCPUName.TabIndex = 0;
-            this.dropCPUName.SelectionChangeCommitted += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
-            this.dropCPUName.SelectedValueChanged += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
-            this.dropCPUName.TextChanged += new System.EventHandler(this.dropCPUName_SelectionChangeCommitted);
-            this.dropCPUName.Leave += new System.EventHandler(this.dropCPUName_Leave);
+            this.spinCaddyQTY.Location = new System.Drawing.Point(11, 17);
+            this.spinCaddyQTY.Name = "spinCaddyQTY";
+            this.spinCaddyQTY.Size = new System.Drawing.Size(35, 20);
+            this.spinCaddyQTY.TabIndex = 1;
+            // 
+            // frameMemoryModules
+            // 
+            this.frameMemoryModules.Controls.Add(this.listMemoryModules);
+            this.frameMemoryModules.Location = new System.Drawing.Point(165, 396);
+            this.frameMemoryModules.Name = "frameMemoryModules";
+            this.frameMemoryModules.Size = new System.Drawing.Size(152, 116);
+            this.frameMemoryModules.TabIndex = 50;
+            this.frameMemoryModules.TabStop = false;
+            this.frameMemoryModules.Text = "Memory Modules";
+            this.frameMemoryModules.Visible = false;
+            // 
+            // buttonAddModule
+            // 
+            this.buttonAddModule.Location = new System.Drawing.Point(140, 423);
+            this.buttonAddModule.Name = "buttonAddModule";
+            this.buttonAddModule.Size = new System.Drawing.Size(22, 22);
+            this.buttonAddModule.TabIndex = 51;
+            this.buttonAddModule.Text = "+";
+            this.buttonAddModule.UseVisualStyleBackColor = true;
+            this.buttonAddModule.Visible = false;
+            this.buttonAddModule.Click += new System.EventHandler(this.buttonAddModule_Click);
+            // 
+            // buttonRemoveModule
+            // 
+            this.buttonRemoveModule.Location = new System.Drawing.Point(140, 473);
+            this.buttonRemoveModule.Name = "buttonRemoveModule";
+            this.buttonRemoveModule.Size = new System.Drawing.Size(22, 22);
+            this.buttonRemoveModule.TabIndex = 52;
+            this.buttonRemoveModule.Text = "-";
+            this.buttonRemoveModule.UseVisualStyleBackColor = true;
+            this.buttonRemoveModule.Visible = false;
+            this.buttonRemoveModule.Click += new System.EventHandler(this.buttonRemoveModule_Click);
+            // 
+            // listMemoryModules
+            // 
+            this.listMemoryModules.FormattingEnabled = true;
+            this.listMemoryModules.Location = new System.Drawing.Point(3, 16);
+            this.listMemoryModules.Name = "listMemoryModules";
+            this.listMemoryModules.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listMemoryModules.Size = new System.Drawing.Size(143, 95);
+            this.listMemoryModules.TabIndex = 0;
+            this.listMemoryModules.Visible = false;
             // 
             // SpecSheet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 561);
+            this.Controls.Add(this.buttonRemoveModule);
+            this.Controls.Add(this.buttonAddModule);
+            this.Controls.Add(this.frameMemoryModules);
             this.Controls.Add(this.frameCaddyQTY);
             this.Controls.Add(this.lblStatusBar2);
             this.Controls.Add(this.lblStatusBar);
@@ -1741,7 +1785,6 @@
             this.frameTester.ResumeLayout(false);
             this.frameTester.PerformLayout();
             this.frameBrand.ResumeLayout(false);
-            this.frameBrand.PerformLayout();
             this.frameModel.ResumeLayout(false);
             this.frameModel.PerformLayout();
             this.frameCPUQTY.ResumeLayout(false);
@@ -1801,6 +1844,7 @@
             this.frameCaddyQTY.ResumeLayout(false);
             this.frameCaddyQTY.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spinCaddyQTY)).EndInit();
+            this.frameMemoryModules.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1819,7 +1863,6 @@
         private System.Windows.Forms.GroupBox frameTester;
         private System.Windows.Forms.TextBox txtTester;
         private System.Windows.Forms.GroupBox frameBrand;
-        private System.Windows.Forms.TextBox txtBrandOther;
         private System.Windows.Forms.ComboBox dropBrand;
         private System.Windows.Forms.GroupBox frameModel;
         private System.Windows.Forms.TextBox txtModel;
@@ -1954,6 +1997,10 @@
         private System.Windows.Forms.CheckBox checkCaddyNA;
         private System.Windows.Forms.NumericUpDown spinCaddyQTY;
         private System.Windows.Forms.ComboBox dropCPUName;
+        private System.Windows.Forms.GroupBox frameMemoryModules;
+        private System.Windows.Forms.Button buttonAddModule;
+        private System.Windows.Forms.Button buttonRemoveModule;
+        private System.Windows.Forms.ListBox listMemoryModules;
     }
 }
 
