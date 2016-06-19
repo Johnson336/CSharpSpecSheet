@@ -175,9 +175,9 @@
             this.checkCaddyNA = new System.Windows.Forms.CheckBox();
             this.spinCaddyQTY = new System.Windows.Forms.NumericUpDown();
             this.frameMemoryModules = new System.Windows.Forms.GroupBox();
+            this.listMemoryModules = new System.Windows.Forms.ListBox();
             this.buttonAddModule = new System.Windows.Forms.Button();
             this.buttonRemoveModule = new System.Windows.Forms.Button();
-            this.listMemoryModules = new System.Windows.Forms.ListBox();
             this.frameISPF.SuspendLayout();
             this.frameTester.SuspendLayout();
             this.frameBrand.SuspendLayout();
@@ -1684,6 +1684,16 @@
             this.frameMemoryModules.Text = "Memory Modules";
             this.frameMemoryModules.Visible = false;
             // 
+            // listMemoryModules
+            // 
+            this.listMemoryModules.FormattingEnabled = true;
+            this.listMemoryModules.Location = new System.Drawing.Point(3, 16);
+            this.listMemoryModules.Name = "listMemoryModules";
+            this.listMemoryModules.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listMemoryModules.Size = new System.Drawing.Size(143, 95);
+            this.listMemoryModules.TabIndex = 0;
+            this.listMemoryModules.Visible = false;
+            // 
             // buttonAddModule
             // 
             this.buttonAddModule.Location = new System.Drawing.Point(140, 423);
@@ -1705,16 +1715,6 @@
             this.buttonRemoveModule.UseVisualStyleBackColor = true;
             this.buttonRemoveModule.Visible = false;
             this.buttonRemoveModule.Click += new System.EventHandler(this.buttonRemoveModule_Click);
-            // 
-            // listMemoryModules
-            // 
-            this.listMemoryModules.FormattingEnabled = true;
-            this.listMemoryModules.Location = new System.Drawing.Point(3, 16);
-            this.listMemoryModules.Name = "listMemoryModules";
-            this.listMemoryModules.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listMemoryModules.Size = new System.Drawing.Size(143, 95);
-            this.listMemoryModules.TabIndex = 0;
-            this.listMemoryModules.Visible = false;
             // 
             // SpecSheet
             // 

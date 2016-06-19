@@ -54,90 +54,93 @@ namespace CSharpSpecSheet
             m_dbConnection.Open();
 
             // create table to hold dropdown data
-            //executeSQL("DROP TABLE IF EXISTS dropdown_data");
-            executeSQL("CREATE TABLE IF NOT EXISTS dropdown_data (category TEXT NOT NULL, name TEXT UNIQUE NOT NULL, frequency INT NOT NULL, id INT PRIMARY KEY)");
+            executeSQL("DROP TABLE IF EXISTS dropdown_data");
+            executeSQL("CREATE TABLE IF NOT EXISTS dropdown_data (category TEXT NOT NULL, name TEXT UNIQUE NOT NULL, frequency INT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE)");
 
-            //executeSQL("DROP TABLE IF EXISTS archive");
+            executeSQL("DROP TABLE IF EXISTS archive");
             executeSQL("CREATE TABLE IF NOT EXISTS archive ("+
-                        "id INT PRIMARY KEY,"+
-                        "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,"+
-                        "ispf TEXT NOT NULL,"+
-                        "date TEXT NOT NULL,"+
-                        "condition TEXT NOT NULL,"+
-                        "brand TEXT NOT NULL,"+
-                        "serial TEXT UNIQUE NOT NULL,"+
-                        "model TEXT NOT NULL,"+
-                        "formfactor TEXT NOT NULL,"+
-                        "cpuqty TEXT NOT NULL,"+
-                        "cpucores TEXT NOT NULL,"+
-                        "checkht TEXT NOT NULL,"+
-                        "cpuspeed TEXT NOT NULL,"+
-                        "cputype TEXT NOT NULL,"+
-                        "busspeed TEXT NOT NULL,"+
-                        "cpuname TEXT NOT NULL,"+
-                        "memorysize TEXT NOT NULL,"+
-                        "memoryrating TEXT NOT NULL,"+
-                        "memorytype TEXT NOT NULL,"+
-                        "memoryspeed TEXT NOT NULL,"+
-                        "weight TEXT NOT NULL,"+
-                        "hddqty TEXT NOT NULL,"+
-                        "hddsize TEXT,"+
-                        "hddtype TEXT,"+
-                        "hddrpm TEXT,"+
-                        "hddserial TEXT,"+
-                        "video TEXT NOT NULL,"+
-                        "videomodel TEXT NOT NULL,"+
-                        "vram TEXT NOT NULL,"+
-                        "optical TEXT NOT NULL,"+
-                        "drivesnone TEXT NOT NULL,"+
-                        "drivesfdd TEXT NOT NULL,"+
-                        "drivestape TEXT NOT NULL,"+
-                        "lcdsize TEXT NOT NULL,"+
-                        "networknone TEXT NOT NULL,"+
-                        "ethernet TEXT NOT NULL,"+
-                        "modem TEXT NOT NULL,"+
-                        "wifi TEXT NOT NULL,"+
-                        "bt TEXT NOT NULL,"+
-                        "coa TEXT NOT NULL,"+
-                        "osno TEXT NOT NULL,"+
-                        "osyes TEXT NOT NULL,"+
-                        "notes TEXT NOT NULL,"+
-                        "accnone TEXT NOT NULL,"+
-                        "accac TEXT NOT NULL,"+
-                        "accpower TEXT NOT NULL,"+
-                        "accbatt TEXT NOT NULL,"+
-                        "accextbatt TEXT NOT NULL,"+
-                        "accfinger TEXT NOT NULL,"+
-                        "accwebcam TEXT NOT NULL,"+
-                        "acckeyboard TEXT NOT NULL,"+
-                        "accmouse TEXT NOT NULL,"+
-                        "damage TEXT NOT NULL,"+
-                        "usb TEXT NOT NULL,"+
-                        "numethernet TEXT NOT NULL,"+
-                        "nummodem TEXT NOT NULL,"+
-                        "vga TEXT NOT NULL,"+
-                        "dvi TEXT NOT NULL,"+
-                        "svideo TEXT NOT NULL,"+
-                        "ps2 TEXT NOT NULL,"+
-                        "audio TEXT NOT NULL,"+
-                        "esatap TEXT NOT NULL,"+
-                        "numserial TEXT NOT NULL,"+
-                        "parallel TEXT NOT NULL,"+
-                        "pcmcia TEXT NOT NULL,"+
-                        "sdcard TEXT NOT NULL,"+
-                        "firewire TEXT NOT NULL,"+
-                        "esata TEXT NOT NULL,"+
-                        "hdmi TEXT NOT NULL,"+
-                        "scsi TEXT NOT NULL,"+
-                        "displayport TEXT NOT NULL,"+
-                        "version TEXT NOT NULL,"+
-                        "tester TEXT NOT NULL,"+
-                        "caddyqty TEXT NOT NULL,"+
-                        "caddyna TEXT NOT NULL)"
+	                    "id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"+
+	                    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,"+
+	                    "ispf TEXT NOT NULL,"+
+	                    "date TEXT NOT NULL,"+
+	                    "condition TEXT NOT NULL,"+
+	                    "brand TEXT NOT NULL,"+
+	                    "serial TEXT NOT NULL UNIQUE,"+
+	                    "model TEXT NOT NULL,"+
+	                    "formfactor TEXT NOT NULL,"+
+	                    "cpuqty TEXT NOT NULL,"+
+	                    "cpucores TEXT NOT NULL,"+
+	                    "checkht TEXT NOT NULL,"+
+	                    "cpuspeed TEXT NOT NULL,"+
+	                    "cputype TEXT NOT NULL,"+
+	                    "busspeed TEXT NOT NULL,"+
+	                    "cpuname TEXT NOT NULL,"+
+	                    "memorysize TEXT NOT NULL,"+
+	                    "memoryrating TEXT NOT NULL,"+
+	                    "memorytype TEXT NOT NULL,"+
+	                    "memoryspeed TEXT NOT NULL,"+
+	                    "weight TEXT NOT NULL,"+
+	                    "hddqty TEXT NOT NULL,"+
+	                    "hddsize TEXT,"+
+	                    "hddtype TEXT,"+
+	                    "hddrpm TEXT,"+
+	                    "hddserial TEXT,"+
+	                    "video TEXT NOT NULL,"+
+	                    "videomodel TEXT NOT NULL,"+
+	                    "vram TEXT NOT NULL,"+
+	                    "optical TEXT NOT NULL,"+
+	                    "drivesnone TEXT NOT NULL,"+
+	                    "drivesfdd TEXT NOT NULL,"+
+	                    "drivestape TEXT NOT NULL,"+
+	                    "lcdsize TEXT NOT NULL,"+
+	                    "networknone TEXT NOT NULL,"+
+	                    "ethernet TEXT NOT NULL,"+
+	                    "modem TEXT NOT NULL,"+
+	                    "wifi TEXT NOT NULL,"+
+	                    "bt TEXT NOT NULL,"+
+	                    "coa TEXT NOT NULL,"+
+	                    "osno TEXT NOT NULL,"+
+	                    "osyes TEXT NOT NULL,"+
+	                    "notes TEXT NOT NULL,"+
+	                    "accnone TEXT NOT NULL,"+
+	                    "accac TEXT NOT NULL,"+
+	                    "accpower TEXT NOT NULL,"+
+	                    "accbatt TEXT NOT NULL,"+
+	                    "accextbatt TEXT NOT NULL,"+
+	                    "accfinger TEXT NOT NULL,"+
+	                    "accwebcam TEXT NOT NULL,"+
+	                    "acckeyboard TEXT NOT NULL,"+
+	                    "accmouse TEXT NOT NULL,"+
+	                    "damage TEXT NOT NULL,"+
+	                    "usb TEXT NOT NULL,"+
+	                    "numethernet TEXT NOT NULL,"+
+	                    "nummodem TEXT NOT NULL,"+
+	                    "vga TEXT NOT NULL,"+
+	                    "dvi TEXT NOT NULL,"+
+	                    "svideo TEXT NOT NULL,"+
+	                    "ps2 TEXT NOT NULL,"+
+	                    "audio TEXT NOT NULL,"+
+	                    "esatap TEXT NOT NULL,"+
+	                    "numserial TEXT NOT NULL,"+
+	                    "parallel TEXT NOT NULL,"+
+	                    "pcmcia TEXT NOT NULL,"+
+	                    "sdcard TEXT NOT NULL,"+
+	                    "firewire TEXT NOT NULL,"+
+	                    "esata TEXT NOT NULL,"+
+	                    "hdmi TEXT NOT NULL,"+
+	                    "scsi TEXT NOT NULL,"+
+	                    "displayport TEXT NOT NULL,"+
+	                    "version TEXT NOT NULL,"+
+	                    "tester TEXT NOT NULL,"+
+	                    "caddyqty TEXT NOT NULL,"+
+	                    "caddyna TEXT NOT NULL,"+
+	                    "checkmcf TEXT NOT NULL,"+
+	                    "checkfg TEXT NOT NULL,"+
+	                    "memorymodules TEXT)"
                         );
 
-            //executeSQL("DROP TABLE IF EXISTS cpu_data");
-            executeSQL("CREATE TABLE IF NOT EXISTS cpu_data (cpuseries TEXT NOT NULL, cputype TEXT NOT NULL, busspeed TEXT NOT NULL, cpuspeed TEXT NOT NULL, cpucores TEXT NOT NULL, cpuht TEXT NOT NULL, model TEXT NOT NULL, formfactor TEXT NOT NULL, id INT PRIMARY KEY, UNIQUE(cpuseries, model, formfactor))");
+            executeSQL("DROP TABLE IF EXISTS cpu_data");
+            executeSQL("CREATE TABLE IF NOT EXISTS cpu_data (cpuseries TEXT NOT NULL, cputype TEXT NOT NULL, busspeed TEXT NOT NULL, cpuspeed TEXT NOT NULL, cpucores TEXT NOT NULL, cpuht TEXT NOT NULL, model TEXT NOT NULL, formfactor TEXT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, UNIQUE(cpuseries, model, formfactor))");
 
 
         }
@@ -482,7 +485,22 @@ namespace CSharpSpecSheet
             File.WriteAllText(filename, output);
             */
 
-            // new load method using sqlite database
+            //create memorymodules string
+            string memorymodules = "";
+            if (listMemoryModules.Items.Count > 0)
+            {
+                memorymodules = listMemoryModules.Items[0].ToString();
+            }
+            if (listMemoryModules.Items.Count > 1)
+            {
+                for (int i=1;i<listMemoryModules.Items.Count;i++)
+                {
+                    memorymodules += "|" + listMemoryModules.Items[i].ToString();
+                }
+            }
+            
+
+            // new save method using sqlite database
             executeSQL("UPDATE OR IGNORE archive SET "+
                 "ispf='" + txtISPF.Text + "', "+
                 "date='" + labelDate.Text + "', " +
@@ -558,10 +576,11 @@ namespace CSharpSpecSheet
                 "caddyqty='" + spinCaddyQTY.Value + "', "+
                 "caddyna='" + checkCaddyNA.Checked + "', "+
                 "checkmcf='" + checkMCF.Checked + "', "+
-                "checkfg='" + checkFG.Checked + "' "+
+                "checkfg='" + checkFG.Checked + "', "+
+                "memorymodules='" + memorymodules + "' "+
                 "WHERE serial='" + txtSerial.Text + "'");
 
-            executeSQL("INSERT OR IGNORE INTO archive (ispf, date, condition, brand, serial, model, formfactor, cpuqty, cpucores, checkht, cpuspeed, cputype, busspeed, cpuname, memorysize, memoryrating, memorytype, memoryspeed, weight, hddqty, hddsize, hddtype, hddrpm, hddserial, video, videomodel, vram, optical, drivesnone, drivesfdd, drivestape, lcdsize, networknone, ethernet, modem, wifi, bt, coa, osno, osyes, notes, accnone, accac, accpower, accbatt, accextbatt, accfinger, accwebcam, acckeyboard, accmouse, damage, usb, numethernet, nummodem, vga, dvi, svideo, ps2, audio, esatap, numserial, parallel, pcmcia, sdcard, firewire, esata, hdmi, scsi, displayport, version, tester, caddyqty, caddyna, checkmcf, checkfg) "+
+            executeSQL("INSERT OR IGNORE INTO archive (ispf, date, condition, brand, serial, model, formfactor, cpuqty, cpucores, checkht, cpuspeed, cputype, busspeed, cpuname, memorysize, memoryrating, memorytype, memoryspeed, weight, hddqty, hddsize, hddtype, hddrpm, hddserial, video, videomodel, vram, optical, drivesnone, drivesfdd, drivestape, lcdsize, networknone, ethernet, modem, wifi, bt, coa, osno, osyes, notes, accnone, accac, accpower, accbatt, accextbatt, accfinger, accwebcam, acckeyboard, accmouse, damage, usb, numethernet, nummodem, vga, dvi, svideo, ps2, audio, esatap, numserial, parallel, pcmcia, sdcard, firewire, esata, hdmi, scsi, displayport, version, tester, caddyqty, caddyna, checkmcf, checkfg, memorymodules) "+
                 "VALUES ('" + txtISPF.Text + "', " +
                 "'" + labelDate.Text + "', " +
                 "'" + dropCondition.Text + "', " +
@@ -636,7 +655,8 @@ namespace CSharpSpecSheet
                 "'" + spinCaddyQTY.Value + "', " +
                 "'" + checkCaddyNA.Checked + "', " + 
                 "'" + checkMCF.Checked + "', " +
-                "'" + checkFG.Checked + "')"
+                "'" + checkFG.Checked + "', " + 
+                "'" + memorymodules + "')"
 
 
                 );
@@ -749,6 +769,7 @@ namespace CSharpSpecSheet
                 dropCondition.Text = (string)input["condition"];
                 dropBrand.Text = (string)input["brand"];
                 //txtSerial.Text = (string)input["serial"];
+                txtModel.Text = ""; // clear this out to force reload of cpu name history
                 txtModel.Text = (string)input["model"];
                 dropFormfactor.Text = (string)input["formfactor"];
                 spinCPUQty.Value = int.Parse((string)input["cpuqty"]);
@@ -817,6 +838,19 @@ namespace CSharpSpecSheet
                 txtTester.Text = (string)input["tester"];
                 spinCaddyQTY.Value = int.Parse((string)input["caddyqty"]);
                 checkCaddyNA.Checked = bool.Parse((string)input["caddyna"]);
+                checkMCF.Checked = bool.Parse((string)input["checkmcf"]);
+                checkFG.Checked = bool.Parse((string)input["checkfg"]);
+
+                // fill memory module list
+                String[] memorymodules = ((string)input["memorymodules"]).Split('|');
+                listMemoryModules.Items.Clear();
+                for (int i = 0; i < memorymodules.Length; i++)
+                {
+                    listMemoryModules.Items.Add(memorymodules[i]);
+                }
+
+
+
             }
 
 
@@ -938,6 +972,11 @@ namespace CSharpSpecSheet
 
         private void dropCPUName_SelectionChangeCommitted(object sender, EventArgs e)
         {
+            if (dropCPUName.Text == "See all...")
+            {
+                initDropdown(dropCPUName);
+                return;
+            }
             // load up cpu informations from database
             SQLiteDataReader result = executeSQLReader("SELECT * FROM cpu_data WHERE cpuseries='" + dropCPUName.Text + "'");
             while (result.Read())
@@ -962,6 +1001,7 @@ namespace CSharpSpecSheet
                 {
                     dropCPUName.Items.Add(result["cpuseries"]);
                 }
+                dropCPUName.Items.Add("See all...");
             } else
             {
                 initDropdown(dropCPUName);
@@ -1004,6 +1044,7 @@ namespace CSharpSpecSheet
         {
             string module = dropMemorySize.Text + " " + dropMemoryType.Text + " " + dropMemoryRating.Text;
             listMemoryModules.Items.Add(module);
+            //MessageBox.Show("modules: " + listMemoryModules.Items.Count);
 
         }
 
